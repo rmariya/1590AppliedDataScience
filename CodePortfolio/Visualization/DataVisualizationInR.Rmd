@@ -1,0 +1,462 @@
+---
+title: "Data Visualization in R"
+author: "Rose Mariyappan"
+date: "April 21, 2019"
+output: 
+  html_document: 
+    toc: true
+    number_sections: true
+---
+
+# Base Graphics
+
+This section of the document contains useful code snippets related to *R*'s default graphics system, base graphics. Reference includes:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Exploratory & Explanatory Plots
+
+Creating exploratory plot for all variables in a data frame - whiteside
+```{r eval = FALSE}
+plot(whiteside)
+```
+Explanatory Scatterplot - passing x, y axis variables and titles for sharing with others
+```{r eval = FALSE}
+plot(whiteside$Temp, whiteside$Gas, xlab="Outside temperature", ylab="Heating gas consumption")
+title(main="heating gas consumption versus outside temperature")
+```
+Adding details to a plot using point shapes, color, and reference lines
+Plot Max.Price vs. Price as red triangles
+Add Min.Price vs. Price as blue circles
+Add an equality reference line with abline()
+```{r eval = FALSE}
+plot(Cars93$Price, Cars93$Max.Price, pch=17, col="red")
+points(Cars93$Price, Cars93$Min.Price, pch=16, col="blue")
+abline(a = 0, b = 1, lty = 2)
+```
+Creating multiple plot arrays
+Set up the side-by-side plot array
+First plot: brain vs. body in its original form
+Add the first title
+Second plot: log-log plot of brain vs. body
+Add the second title
+```{r eval = FALSE}
+par(mfrow = c(1,2))
+plot(Animals2$body, Animals2$brain)
+title("Original representation")
+plot(Animals2$body, Animals2$brain, log="xy")
+title("Log-log plot")
+```
+Create the pie chart
+```{r eval = FALSE}
+pie(tbl)
+title("Pie chart")
+```
+Create the barplot with perpendicular, half-sized labels
+```{r eval = FALSE}
+barplot(tbl, las = 2, cex.names = 0.5)
+title("Bar chart")
+```
+## Different Plot Types
+
+Create a histogram of counts with hist()
+```{r eval = FALSE}
+hist(Cars93$Horsepower, main="hist() plot")
+```
+Create a normalized histogram with truehist() - from the MASS package and scales these counts to give an estimate of the probability density.
+```{r eval = FALSE}
+truehist(Cars93$Horsepower, main="truehist() plot")
+```
+Add the density curve to the histogram
+```{r eval = FALSE}
+lines(density(weights))
+```
+The quantile-quantile plot, or QQ-plot to know whether Gaussian distribution assumption is reasonable for data
+Show the normal QQ-plot of the chick weights
+```{r eval = FALSE}
+qqPlot(weights)
+```
+sunflowerplot() function for repeated numerical data
+```{r eval = FALSE}
+sunflowerplot(Boston$rad ~ Boston$zn)
+title("Sunflower plot")
+```
+The boxplot() function shows how the distribution of a numerical variable y differs across the unique levels of a second variable, x
+Create a variable-width boxplot with log y-axis & horizontal labels
+```{r eval = FALSE}
+boxplot(Boston$crim ~ Boston$rad, varwidth = TRUE, log="y", las=1)
+title("Crime rate vs. radial highway index")
+```
+A mosaic plot may be viewed as a scatterplot between categorical variables
+```{r eval = FALSE}
+mosaicplot(carb ~ cyl, data=mtcars)
+```
+correlation matrices with the corrplot() function
+Load the corrplot library for the corrplot() function
+Compute the correlation matrix for these variables
+Generate the correlation ellipse plot
+```{r eval = FALSE}
+library(corrplot)
+corrMat <- cor(numericalVars)
+corrplot(corrMat, method="ellipse")
+```
+Build a decision tree model using the rpart() function 
+Load the rpart library
+Fit an rpart model to predict medv from all other Boston variables
+Plot the structure of this decision tree model
+Add labels to this plot
+```{r eval = FALSE}
+library(rpart)
+tree_model <- rpart(medv ~., data = Boston)
+plot(tree_model)
+text(tree_model, cex=0.7)
+```
+## Plot Options
+
+Add text giving names of cars next to data points - labels for x-y value pair
+Add car names, offset from points, with larger bold text
+Add "Before" text in blue, rotated 30 degrees, 80% size
+Add "After" text in red, rotated -20 degrees, 80% size
+```{r eval = FALSE}
+text(x = Cars93$Horsepower[index3], 
+     y = Cars93$MPG.city[index3],
+     labels = Cars93$Make[index3], adj = 0)
+text(Cars93$Horsepower[index3], Cars93$MPG.city[index3], label=Cars93$Make[index3], font=4, adj = -0.2, cex=1.2)
+text(x = whiteside$Temp[indexB], y = whiteside$Gas[indexB],
+     labels = "Before", col = "blue", srt = 30, cex = 0.8)
+text(x=whiteside$Temp[indexA], y=whiteside$Gas[indexA], labels = "After", col="red", srt=-20, cex=0.8)
+```
+Add legend that identifies points as "Before" and "After"
+```{r eval = FALSE}
+legend("topright", pch = c(17, 1), 
+       legend = c("Before", "After"))
+```
+Custom axes with axis()
+Create a boxplot of sugars by shelf value, without axes
+Add a default y-axis to the left of the boxplot
+Add an x-axis below the plot, labelled 1, 2, and 3
+Add a second x-axis above the plot
+```{r eval = FALSE}
+boxplot(UScereal$sugars~UScereal$shelf, axes=FALSE)
+axis(side = 2)
+axis(side = 1, at = c(1, 2, 3))
+axis(side = 3, at = c(1, 2, 3), labels=c("floor", "middle", "top"))
+```
+Call supsmu() to generate a smooth trend curve, with bass=10
+Add this trend curve to the plot
+Add this trend curve as a heavy, dotted line
+```{r eval = FALSE}
+trend1 <- supsmu(Cars93$Horsepower, Cars93$MPG.city, bass=10)
+lines(trend1)
+lines(trend2, lty=3, lwd=2)
+```
+Common Scaling
+Define common x and y limits for the four plots
+Plot y1 vs. x1 with common x and y limits, labels & title. Similarly plot other datasets
+```{r eval = FALSE}
+xmin <- min(anscombe$x1, anscombe$x2, anscombe$x3, anscombe$x4)
+xmax <- max(anscombe$x1, anscombe$x2, anscombe$x3, anscombe$x4)
+ymin <- min(anscombe$y1, anscombe$y2, anscombe$y3, anscombe$y4)
+ymax <- max(anscombe$y1, anscombe$y2, anscombe$y3, anscombe$y4)
+plot(anscombe$x1, anscombe$y1,
+     xlim = c(xmin, xmax),
+     ylim = c(ymin, ymax),
+     xlab = "x value", ylab = "y value",
+     main = "First dataset")
+```
+## Plot Layouts
+
+Constructing and displaying layout matrices
+Use the matrix function to create a matrix with three rows and two columns
+Call the layout() function to set up the plot array
+Show where the three plots will go 
+Create 3 plots to view
+```{r eval = FALSE}
+layoutMatrix <- matrix(
+  c(
+    0, 1,
+    2, 0,
+    0, 3
+  ), 
+  byrow = TRUE, 
+  nrow = 3
+)
+layout(layoutMatrix)
+layout.show(n=3)
+plot(whiteside$Temp[indexB], whiteside$Gas[indexB], ylim = c(0, 8))
+title("Before data only")
+plot(whiteside$Temp, whiteside$Gas, ylim = c(0, 8))
+title("Complete dataset")
+plot(whiteside$Temp[indexA], whiteside$Gas[indexA], ylim = c(0, 8))
+title("After data only")
+```
+Creating arrays with different sized plots
+Create row1, row2, and layoutVector
+Convert layoutVector into layoutMatrix
+Set up the plot array
+Plot scatterplot
+Plot sunflower plot
+```{r eval = FALSE}
+row1 <- c(1,0,0)
+row2 <- c(0,2,2)
+layoutVector <- c(row1,row2,row2)
+layoutMatrix <- matrix(layoutVector, byrow = TRUE, nrow = 3)
+layout(layoutMatrix)
+plot(Boston$rad, Boston$zn)
+sunflowerplot(Boston$rad, Boston$zn)
+```
+Generate a horizontal barplot of these frequencies
+Add names labels with text()
+Add count labels with text()
+```{r eval = FALSE}
+barplot(tbl, horiz =TRUE,
+                col = "transparent",
+                names.arg = "")
+text(20, mids, names(tbl))
+text(35, mids, as.numeric(tbl))
+```
+Call symbols() to create the default bubbleplot
+The symbols() function allows us to extend scatterplots to show the influence of other variables.
+```{r eval = FALSE}
+symbols(Cars93$Horsepower, Cars93$MPG.city,
+        circles = sqrt(Cars93$Price),
+        inches = 0.1)
+```
+## Saving Plot Files
+
+Saving plot results as files
+Call png() with the name of the file we want to create
+Re-create the plot from the last exercise
+Save our file and return to our interactive session
+Verify that we have created the file
+```{r eval = FALSE}
+png("bubbleplot.png")
+symbols(Cars93$Horsepower, Cars93$MPG.city,
+        circles = sqrt(Cars93$Price),
+        inches = 0.1)
+dev.off()
+list.files(pattern = "png")
+```
+## Plot colors
+
+Using color to enhance a bubbleplot
+Iliinsky and Steele color name vector
+Create the `cylinderLevels` variable
+Create the colored bubbleplot
+Using color to enhance stacked barplots
+```{r eval = FALSE}
+IScolors <- c("red", "green", "yellow", "blue",
+              "black", "white", "pink", "cyan",
+              "gray", "orange", "brown", "purple")
+cylinderLevels <- as.numeric(Cars93$Cylinders)
+symbols(Cars93$Horsepower, Cars93$MPG.city, 
+        circles = cylinderLevels, inches = 0.2, 
+        bg = IScolors[cylinderLevels])
+tbl <- table(Cars93$Cylinders, Cars93$Origin)
+barplot(tbl, col=IScolors)
+```
+
+# Grammer of graphics - ggplot2
+
+This section of the document contains useful code snippets related to ggplot2 in *R* programming language. Reference includes:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Exploring ggplot2
+
+Load the ggplot2 package and scatter plot, here cyl is treated as factor
+```{r eval = FALSE}
+library(ggplot2)
+ggplot(mtcars, aes(x = factor(cyl), y = mpg)) +
+  geom_point()
+```
+Add geom_point() and geom_smooth() with + to draw smooth line
+```{r eval = FALSE}
+ggplot(diamonds, aes(x = carat, y = price)) +
+geom_point() +
+geom_smooth()
+```
+Add color for clarity. Plot points with argument alpha to make the points 60% transparent/40% visible..
+```{r eval = FALSE}
+ggplot(diamonds, aes(x = carat, y = price, color = clarity)) +
+  geom_point(alpha = 0.4)
+```
+Include the lines of the linear models, per cyl & lm for the entire dataset in its whole
+```{r eval = FALSE}
+ggplot(mtcars, aes(x = wt, y = mpg, col = cyl)) +
+  geom_point() + # Copy from Plot 2
+  geom_smooth(method = "lm", se = FALSE) + # Copy from Plot 2
+  geom_smooth(method = "lm", se = FALSE, lty = 2, aes(group = 1)) 
+```
+column-wise comparison of measure values - length & width specified in facet_grid, colored by Part values
+```{r eval = FALSE}
+ggplot(iris.tidy, aes(x = Species, y = Value, col = Part)) +
+  geom_jitter() +
+  facet_grid(. ~ Measure)
+```
+## Aesthetics
+
+Map wt to x, mpg to y and cyl to col & change shape and size of the points
+```{r eval = FALSE}
+ggplot(mtcars, aes(x = wt, y = mpg, color = cyl)) +
+  geom_point(shape = 1, size = 4)
+```
+cyl to fill(for inside of point) & am to color for outside 
+```{r eval = FALSE}
+ggplot(mtcars, aes(x = wt, y = mpg, fill = cyl, col = am)) +
+  geom_point(shape = 21, size = 4, alpha = 0.6)
+```
+Map cyl to label
+```{r eval = FALSE}
+ggplot(mtcars, aes(x=wt, y=mpg, label = cyl), main="mpg described by wt") +
+geom_text()
+```
+Set the fill aesthetic; color, size and shape attributes
+```{r eval = FALSE}
+ggplot(mtcars, aes(x=wt, y=mpg, fill=cyl)) +
+geom_point(color = my_color, size=10, shape = 23)
+```
+Expand to draw text with label rownames(mtcars) and color red
+```{r eval = FALSE}
+ggplot(mtcars, aes(x = wt, y = mpg, fill = cyl)) +
+geom_text(label = rownames(mtcars), color = "red" )
+```
+Use the "stack", "fill" and "dodge" positions
+Add geom (position = "stack" by default)
+Fill - show proportion
+Dodging - principles of similarity and proximity
+Clean up the axes with scale_ functions
+```{r eval = FALSE}
+cyl.am + 
+  geom_bar()
+cyl.am + 
+  geom_bar(position = "fill") 
+cyl.am +
+  geom_bar(position = "dodge") 
+val = c("#E41A1C", "#377EB8")
+lab = c("Manual", "Automatic")
+cyl.am +
+  geom_bar(position = "dodge") +
+  scale_x_discrete("Cylinders") + 
+  scale_y_continuous("Number") +
+  scale_fill_manual("Transmission", 
+                    values = val,
+                    labels = lab) 
+```
+Add function to change y axis limits
+```{r eval = FALSE}
+ggplot(mtcars, aes(x = mpg, y = 0)) +
+  geom_jitter() +
+  scale_y_continuous(limits = c(-2, 2))
+```
+Overplotting - Point shape and transparency
+```{r eval = FALSE}
+ggplot(mtcars, aes(x=wt, y=mpg, col = cyl)) + 
+geom_point(size = 4, shape = 1)
+ggplot(mtcars, aes(x=wt, y=mpg, col = cyl)) + 
+geom_point(size = 4, alpha = 0.6)
+```
+Overplotting - Use position = "jitter" if all individual values line up on a single axis within each clarity category
+```{r eval = FALSE}
+ggplot(diamonds, aes(x=clarity, y=carat, color=price)) +
+geom_point(alpha = 0.5, position="jitter")
+```
+## Different plot types
+
+Scatter plot and jittering
+```{r eval = FALSE}
+ggplot(Vocab, aes(x=education, y=vocabulary)) +
+geom_jitter(alpha = 0.2, shape = 1)
+```
+Histograms - fill to custom color, adjust binwidth, plot by density
+```{r eval = FALSE}
+ggplot(mtcars, aes(x = mpg)) +
+  geom_histogram(aes(y = ..density..), binwidth = 1, fill="#377EB8")
+```
+Barplot - Use posn_d as position and adjust alpha to 0.6
+```{r eval = FALSE}
+posn_d <- position_dodge(width = 0.2)
+ggplot(mtcars, aes(x = cyl, fill = am)) +
+  geom_bar(position = posn_d, alpha=0.6)
+```
+Barplot - Plot education on x and vocabulary on fill, use the default brewed color palette
+```{r eval = FALSE}
+ggplot(Vocab, aes(x = education, fill = vocabulary)) +
+  geom_bar(position="fill") +
+  scale_fill_brewer()
+```
+Lineplots - plot to represent the fraction of total population that is unemployed
+```{r eval = FALSE}
+ggplot(economics, aes(x = date, y = unemploy/pop)) +
+geom_line()
+```
+Lineplots - Expand economics to draw the recess periods using geom_rect()
+```{r eval = FALSE}
+ggplot(economics, aes(x = date, y = unemploy/pop)) +
+  geom_rect(data = recess,
+         aes(xmin = begin, xmax = end, ymin = -Inf, ymax = +Inf),
+         inherit.aes = FALSE, fill = "red", alpha = 0.2) +
+  geom_line()
+```
+Multiple time series
+```{r eval = FALSE}
+ggplot(fish.tidy, aes(x = Year, y = Capture, color=Species)) +
+geom_line()
+```
+qplot for quick & dirty exploratory plots
+```{r eval = FALSE}
+qplot(wt, mpg, data = mtcars)
+qplot(wt, mpg, data = mtcars, col = qsec)
+qplot(factor(cyl), factor(vs), data=mtcars, geom="jitter")
+```
+
+# Interactive graphics
+
+This section of the document contains useful code snippets related to interactive graphics in *R* programming language. Reference include:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Shiny for interactive reports
+Shiny is an R package that uses R to build interactive web apps such as data explorers and dashboards. You can add shiny components to an R Markdown file to make an interactive document.
+
+You can embed Shiny inputs and outputs in your document. Outputs are automatically updated whenever inputs change.  This demonstrates how a standard R plot can be made interactive by wrapping it in the Shiny `renderPlot` function. The `selectInput` and `sliderInput` functions create the input widgets used to drive the plot.
+
+```{r eval = FALSE}
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(faithful$eruptions, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Duration (minutes)", main = "Geyser eruption duration")
+
+  dens <- density(faithful$eruptions, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+## Interactive ggvis graphics
+ggvis provides a number of ways to enhance plots with interactivity. ggvis relies on the shiny framework to create interactivity.
+
+The density plot below allows users to set the kernel and bandwidth of the plot.
+```{r eval = FALSE}
+library(ggvis)
+
+mtcars %>% ggvis(x = ~wt) %>%
+    layer_densities(
+      adjust = input_slider(.1, 2, value = 1, step = .1, label = "Bandwidth adjustment"),
+      kernel = input_select(
+        c("Gaussian" = "gaussian",
+          "Epanechnikov" = "epanechnikov",
+          "Rectangular" = "rectangular",
+          "Triangular" = "triangular",
+          "Biweight" = "biweight",
+          "Cosine" = "cosine",
+          "Optcosine" = "optcosine"),
+        label = "Kernel")
+    )
+```

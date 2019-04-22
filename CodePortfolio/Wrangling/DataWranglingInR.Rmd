@@ -1,0 +1,277 @@
+---
+title: "Data Wrangling in R"
+author: "Rose Mariyappan"
+date: "April 21, 2019"
+output: 
+  html_document: 
+    toc: true
+    number_sections: true
+---
+
+# Data Cleaning
+
+This section of the document contains useful code snippets related to data cleaning in *R* programming language. Reference include:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Exploring Raw Data
+First thing to do when you get a new dataset is to understand its structure. 
+
+Check the class of bmi dataset
+```{r eval = FALSE}
+class(bmi)
+```
+Check the dimensions of bmi
+```{r eval = FALSE}
+dim(bmi)
+```
+View the column names of bmi
+```{r eval = FALSE}
+names(bmi)
+```
+Check the structure of bmi
+```{r eval = FALSE}
+str(bmi)
+```
+Load dplyr - glimpse function
+```{r eval = FALSE}
+library(dplyr)
+```
+Check the structure of bmi, the dplyr way
+```{r eval = FALSE}
+glimpse(bmi)
+```
+View a summary of bmi
+```{r eval = FALSE}
+summary(bmi)
+```
+View the first 6 rows
+```{r eval = FALSE}
+head(bmi)
+```
+View the first 15 rows
+```{r eval = FALSE}
+head(bmi, n = 15)
+```
+View the last 6 rows
+```{r eval = FALSE}
+tail(bmi)
+```
+View the last 10 rows
+```{r eval = FALSE}
+tail(bmi, n = 10)
+```
+Histogram of BMIs from 2008 - visualize data
+```{r eval = FALSE}
+hist(bmi$Y2008)
+```
+Scatter plot comparing BMIs from 1980 to those from 2008 - visualize
+```{r eval = FALSE}
+plot(bmi$Y1980, bmi$Y2008)
+```
+
+## Tidying data
+After exploring data, next steps is to tidying the data.
+
+### Gathering columns into key-value pairs
+`gather()` should be used when you have columns that are not variables and you want to collapse them into key-value pairs. The easiest way to visualize the effect of gather() is that it makes wide datasets long.
+This will create two new columns: year containing as values what are currently column headers & bmi_val. 
+```{r eval = FALSE}
+gather(wide_df, my_key, my_val, -col)
+bmi_long <- gather(bmi, year, bmi_val, -Country)
+```
+### Spreading key-value pairs into columns
+The opposite of gather() is spread(), which takes key-values pairs and spreads them across multiple columns. This is useful when values in a column should actually be column names (i.e. variables). It can also make data more compact and easier to read.
+The easiest way to visualize the effect of spread() is that it makes long datasets wide.
+```{r eval = FALSE}
+spread(long_df, my_key, my_val)
+bmi_wide <- spread(bmi_long, year,bmi_val)
+```
+### Separating columns
+The separate() function allows you to separate one column into multiple columns. Unless you tell it otherwise, it will attempt to separate on any character that is not a letter or number. You can also specify a specific separator using the sep argument.
+Separate Country_ISO into two columns: Country and ISO
+```{r eval = FALSE}
+separate(treatments, year_mo, c("year", "month"))
+bmi_cc_clean <- separate(bmi_cc, col = Country_ISO, into = c("Country", "ISO"), sep = "/")
+```
+### Uniting columns
+The opposite of separate() is unite(), which takes multiple columns and pastes them together. By default, the contents of the columns will be separated by underscores in the new column, but this behavior can be altered via the sep argument.
+Reunite the Country and ISO columns into a single column called Country_ISO. Separate each country name and code with a dash (-)
+```{r eval = FALSE}
+bmi_cc <- unite(bmi_cc_clean, Country_ISO, Country, ISO, sep = "-")
+```
+### Addressing Common Symptoms of messy data
+* Column headers are values, not variable names
+
+1. Gather the month columns
+2. Arrange rows by YEAR using dplyr's arrange
+```{r eval = FALSE}
+census2 <- gather(census, month, amount, -YEAR)
+census2_arr <- arrange(census2, YEAR)
+```
+* Variables are stored in both rows and columns
+
+1. Spread the type column
+```{r eval = FALSE}
+census_long2 <- spread(census_long, type, amount)
+```
+* Multiple values are stored in one column
+
+1.Separate the yr_month column into two
+```{r eval = FALSE}
+census_long4 <- separate(census_long3, yr_month, c("year", "month"))
+```
+### String Manipulation
+* Trimming and padding strings
+Load the stringr package
+```{r eval = FALSE}
+library(stringr)
+```
+Trim all leading and trailing whitespace
+```{r eval = FALSE}
+str_trim(c("   Filip ", "Nick  ", " Jonathan"))
+```
+Pad these strings with leading zeros
+```{r eval = FALSE}
+str_pad(c("23485W", "8823453Q", "994Z"), width=9, side="left", pad="0")
+```
+* Upper and lower case
+Make states all uppercase and save result to states_upper
+```{r eval = FALSE}
+states_upper <- toupper(states)
+```
+Make states_upper all lowercase again
+```{r eval = FALSE}
+tolower(states_upper)
+```
+* Finding and replacing strings
+Detect all dates of birth (dob) in 1997
+```{r eval = FALSE}
+str_detect(students3$dob, "1997")
+```
+In the sex column, replace "F" with "Female" ...
+```{r eval = FALSE}
+students3$sex <- str_replace(students3$sex, "F", "Female")
+```
+* Finding missing values
+Call is.na() on the full social_df to spot all NAs
+```{r eval = FALSE}
+is.na(social_df)
+```
+Use the any() function to ask whether there are any NAs in the data
+```{r eval = FALSE}
+any(is.na(social_df))
+```
+View a summary() of the dataset
+```{r eval = FALSE}
+summary(social_df)
+```
+Call table() on the status column
+```{r eval = FALSE}
+table(social_df$status)
+```
+* Dealing with missing values
+Find indices of NAs in Max.Gust.SpeedMPH
+```{r eval = FALSE}
+ind <- which(is.na(weather6$Max.Gust.SpeedMPH))
+```
+Look at the full rows for records missing Max.Gust.SpeedMPH
+```{r eval = FALSE}
+weather6[ind, ]
+```
+Replace all empty strings in status with NA
+```{r eval = FALSE}
+social_df$status[social_df$status == ""] <- "NA"
+```
+Use complete.cases() to see which rows have no missing values
+```{r eval = FALSE}
+complete.cases(social_df)
+```
+Use na.omit() to remove all rows with any missing values
+```{r eval = FALSE}
+na.omit(social_df)
+```
+* Dealing with outliers, obvious errors, and strange values
+Look at a summary() of students3
+```{r eval = FALSE}
+summary(students3)
+```
+View a histogram of the age variable
+```{r eval = FALSE}
+hist(students3$age)
+```
+View a boxplot of age
+```{r eval = FALSE}
+boxplot(students3$age)
+```
+
+# Data Manipulation
+
+This section of the document contains useful code snippets related to data manipulation in *R* programming language. Reference include:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Filter
+The filter verb extracts particular observations based on a condition. 
+
+Load dplyr package
+```{r eval = FALSE}
+library(dplyr)
+```
+Filter the gapminder dataset for the year 1957 and country China
+```{r eval = FALSE}
+gapminder %>%
+filter(year == 2002, country == "China")
+```
+## arrange
+You use arrange() to sort observations in ascending or descending order of a particular variable.
+
+Sort in ascending or descending order of lifeExp
+```{r eval = FALSE}
+gapminder %>%
+arrange(lifeExp)
+
+gapminder %>%
+arrange(desc(lifeExp))
+```
+## mutate
+Use mutate to change or create a column
+
+Use mutate to change lifeExp to be in months or create a new column called lifeExpMonths
+```{r eval = FALSE}
+gapminder %>%
+mutate(lifeExp = lifeExp * 12)
+
+gapminder %>%
+mutate(lifeExpMonths = lifeExp * 12)
+```
+## Combining filter, mutate, and arrange
+
+combine all three of the verbs Filter, mutate, and arrange the gapminder dataset
+```{r eval = FALSE}
+library(gapminder)
+library(dplyr)
+
+gapminder %>%
+filter(year == 2007) %>%
+mutate(lifeExpMonths = lifeExp * 12) %>%
+arrange(desc(lifeExpMonths))
+```
+## summarize
+Use summarize to calculate summary statistics
+
+Summarize to Filter for 1957 then find the median life expectancy and the maximum GDP per capita
+```{r eval = FALSE}
+gapminder %>%
+filter(year == 1957) %>%
+summarize(medianLifeExp = median(lifeExp), maxGdpPercap = max(gdpPercap))
+```
+## group_by
+Use group_by to calculate summary for the specified group
+
+Find median life expectancy and maximum GDP per capita in each continent/year combination
+```{r eval = FALSE}
+gapminder %>%
+group_by(continent, year) %>%
+summarize(medianLifeExp = median(lifeExp), maxGdpPercap = max(gdpPercap))
+```
