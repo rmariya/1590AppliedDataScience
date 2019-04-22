@@ -1,0 +1,364 @@
+---
+title: "Data Analysis in R"
+author: "Rose Mariyappan"
+date: "April 21, 2019"
+output: 
+  html_document: 
+    toc: true
+    number_sections: true
+---
+
+# Correlation and Regression
+
+This section of the document contains useful code snippets related to Correlation and Regression analysis in *R* programming language. Reference includes:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Correlation
+
+Compute correlation for all non-missing pairs using cor() function
+```{r eval = FALSE}
+ncbirths %>%
+  summarize(N = n(), r = cor(weight, weeks, use = "pairwise.complete.obs"))
+```
+## Linear Regression
+
+Scatterplot with regression line - method = "lm" for linear regression
+```{r eval = FALSE}
+ggplot(data = bdims, aes(x = hgt, y = wgt)) + 
+  geom_point() + 
+  geom_smooth(method = "lm", se = FALSE)
+```
+Fitting simple linear models
+Linear model for SLG as a function of OBP
+Log-linear model for body weight as a function of brain weight
+```{r eval = FALSE}
+lm(SLG ~ OBP, data = mlbBat10)
+lm(log(BodyWt) ~ log(BrainWt), data=mammals)
+```
+Show the coefficients of the linear model
+```{r eval = FALSE}
+coef(mod)
+```
+Show full output for the linear model including p-value for each coef, R-squared value, mod is the linear model output 
+```{r eval = FALSE}
+summary(mod)
+```
+Fitted values and residuals - mean of fitted values, residuals
+```{r eval = FALSE}
+mean(bdims$wgt) == mean(fitted.values(mod))
+mean(residuals(mod)
+```
+## Interpretting Regression Models
+
+augment() function takes a model object as  argument and returns a data frame that contains the data on which the model was fit
+```{r eval = FALSE}
+library(broom)
+bdims_tidy <- augment(mod)
+```
+Making predictions - linear model mod, newdata to predict the weight of ben
+```{r eval = FALSE}
+predict(mod, ben)
+broom::augment(mod, newdata=ben)
+```
+Adding regression line to a plot manually
+```{r eval = FALSE}
+coef(lm(wgt ~ hgt, data=bdims))
+ggplot(data = bdims, aes(x = hgt, y = wgt)) + 
+  geom_point() + 
+  geom_abline(data = coefs, 
+              aes(intercept = `(Intercept)`, slope = `hgt`, 
+              color = "dodgerblue"))
+```
+Assessing Model fit - Compute RMSE, mean of residuals should be zero
+```{r eval = FALSE}
+summary(mod)
+residuals(mod)
+df.residual(mod)
+mean(residuals(mod))
+RMSE <- sqrt(sum(residuals(mod)^2) / df.residual(mod))
+```
+Compute R-squared
+The bdims_tidy data frame is the result of augment()-ing the bdims data frame with the mod for wgt as a function of hgt.
+```{r eval = FALSE}
+summary(mod)
+bdims_tidy %>%
+  summarize(var_y = var(wgt), var_e = var(.resid)) %>%
+  mutate(R_squared = 1 - var_e / var_y)
+```
+Leverage
+The leverage of an observation in a regression model is defined entirely in terms of the distance of that observation from the mean of the explanatory variable. 
+Rank points of high leverage
+```{r eval = FALSE}
+mod %>%
+  augment() %>%
+  arrange(desc(.hat)) %>%
+  head()
+```
+Influence
+Observations of high leverage may or may not be influential. The influence of an observation depends not only on its leverage, but also on the magnitude of its residual. 
+Rank influential points
+```{r eval = FALSE}
+mod %>%
+augment() %>%
+arrange(desc(.cooksd)) %>%
+head()
+```
+Removing Outliers - filter, fit model to new data & visualize
+```{r eval = FALSE}
+nontrivial_players <- mlbBat10 %>%
+filter(AB >= 10 & OBP < 0.500)
+mod_cleaner <- lm(SLG ~ OBP, data=nontrivial_players)
+ggplot(nontrivial_players, aes(x=OBP, y=SLG)) +
+geom_point() +
+geom_smooth(method = "lm")
+```
+High leverage but lowest Cook's distance
+```{r eval = FALSE}
+mod %>%
+augment() %>%
+arrange(desc(.hat),(.cooksd)) %>%
+head()
+```
+
+# Cluster Anaysis
+
+This section of the document contains useful code snippets related to Cluster analysis in *R* programming language. Reference includes:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Distance between observations
+
+Calculate and print their distance using the Euclidean Distance formula
+Split the players data frame into two observations & calculate their euclidean distance
+```{r eval = FALSE}
+player1 <- two_players[1, ]
+player2 <- two_players[2, ]
+player_distance <- sqrt( (player1$x - player2$x)^2 + (player1$y - player2$y)^2 )
+```
+Using dist() function
+```{r eval = FALSE}
+dist_three_players <- dist(three_players)
+```
+Effects of Scale - when the features have different scales; Scale three trees & calculate the distance  
+```{r eval = FALSE}
+scaled_three_trees <- scale(three_trees)
+dist_scaled_trees <- dist(scaled_three_trees)
+```
+Calculating distance between categorical variables
+Dummify the Survey Data & Calculate the Distance
+```{r eval = FALSE}
+dummy_survey <- dummy.data.frame(job_survey)
+dist_survey <- dist(dummy_survey, method="binary")
+```
+Calculate linkage - Complete, Single, Average between group 1-2 and 3
+```{r eval = FALSE}
+complete <- max(c(distance_1_3, distance_2_3))
+single <- min(c(distance_1_3, distance_2_3))
+average <- mean(c(distance_1_3, distance_2_3))
+```
+## Hierarchical Clustering
+
+Assign Cluster Membership
+Calculate the Distance
+Perform the hierarchical clustering using the complete linkage - hclust()
+Calculate the assignment vector with a k of 2
+Create a new data frame storing these results
+```{r eval = FALSE}
+dist_players <- dist(lineup)
+hc_players <- hclust(dist_players, method="complete")
+clusters_k2 <- cutree(hc_players, k=2)
+lineup_k2_complete <- mutate(lineup, cluster = clusters_k2)
+```
+Exploring Clusters
+Count the cluster assignments
+Plot the positions of the players and color them using their cluster
+```{r eval = FALSE}
+count(lineup_k2_complete, cluster)
+ggplot(lineup_k2_complete, aes(x = x, y = y, color = factor(cluster))) +
+  geom_point()
+```
+Comparing average, single & complete linkage
+Prepare the Distance Matrix
+Generate hclust for complete, single & average linkage methods
+Plot & Label the 3 Dendrograms Side-by-Side
+```{r eval = FALSE}
+dist_players <- dist(lineup)
+hc_complete <- hclust(dist_players, method="complete")
+hc_single <- hclust(dist_players, method="single")
+hc_average <- hclust(dist_players, method="average")
+par(mfrow = c(1,3))
+plot(hc_complete, main = 'Complete Linkage')
+plot(hc_single, main = 'Single Linkage')
+plot(hc_average, main = 'Average Linkage')
+```
+Clusters based on height
+Create a dendrogram object from the hclust variable
+Plot the dendrogram
+Color branches by cluster formed from the cut at a height of 20 & plot
+```{r eval = FALSE}
+library(dendextend)
+dist_players <- dist(lineup, method = 'euclidean')
+hc_players <- hclust(dist_players, method = "complete")
+dend_players <- as.dendrogram(hc_players)
+plot(dend_players)
+dend_20 <- color_branches(dend_players, h = 20)
+plot(dend_20)
+```
+Exploring the branches cut from the tree
+Calculate the assignment vector with a h of 20
+Create a new data frame storing these results
+Plot the positions of the players and color them using their cluster for height = 20
+```{r eval = FALSE}
+dist_players <- dist(lineup, method = 'euclidean')
+hc_players <- hclust(dist_players, method = "complete")
+clusters_h20 <- cutree(hc_players, h=20)
+lineup_h20_complete <- mutate(lineup, cluster = clusters_h20)
+ggplot(lineup_h20_complete, aes(x = x, y = y, color = factor(cluster))) +
+  geom_point()
+```
+## k-means Clustering
+
+Build a kmeans model
+Extract the cluster assignment vector from the kmeans model
+Create a new data frame appending the cluster assignment
+Plot the positions of the players and color them using their cluster
+```{r eval = FALSE}
+model_km2 <- kmeans(lineup, centers = 2)
+clust_km2 <- model_km2$cluster
+lineup_km2 <- mutate(lineup, cluster = clust_km2)
+ggplot(lineup_km2, aes(x = x, y = y, color = factor(cluster))) +
+  geom_point()
+```
+Evaluating different values of K by eye
+Use map_dbl to run many models with varying value of k (centers)
+Generate a data frame containing both k and tot_withinss
+Plot the elbow plot
+```{r eval = FALSE}
+library(purrr)
+tot_withinss <- map_dbl(1:10,  function(k){
+  model <- kmeans(x = lineup, centers = k)
+  model$tot.withinss
+})
+elbow_df <- data.frame(
+  k = 1:10 ,
+  tot_withinss = tot_withinss
+)
+ggplot(elbow_df, aes(x = k, y = tot_withinss)) +
+  geom_line() +
+  scale_x_continuous(breaks = 1:10)
+```
+Silhouette analysis
+Silhouette analysis allows you to calculate how similar each observations is with the cluster it is assigned relative to other clusters.
+Generate a k-means model using the pam() function with a k = 2
+Plot the silhouette visual for the pam_k2 model
+Generate a k-means model using the pam() function with a k = 3
+Plot the silhouette visual for the pam_k3 model
+```{r eval = FALSE}
+library(cluster)
+pam_k2 <- pam(lineup, k = 2)
+plot(silhouette(pam_k2))
+pam_k3 <- pam(lineup, k =3)
+plot(silhouette(pam_k3))
+```
+Best K - average Silhouette width
+Use map_dbl to run many models with varying value of k
+Generate a data frame containing both k and sil_width
+Plot the relationship between k and sil_width
+```{r eval = FALSE}
+sil_width <- map_dbl(2:10,  function(k){
+  model <- pam(x = customers_spend, k = k)
+  model$silinfo$avg.width
+})
+sil_df <- data.frame(
+  k = 2:10,
+  sil_width = sil_width
+)
+ggplot(sil_df, aes(x = k, y = sil_width)) +
+  geom_line() +
+  scale_x_continuous(breaks = 2:10)
+```
+Exploring using k-means
+Build a k-means model for the customers_spend with a k of 2
+Extract the vector of cluster assignments from the model
+Build the segment_customers data frame
+Calculate the size of each cluster
+Calculate the mean for each category
+```{r eval = FALSE}
+model_customers <- kmeans(x=customers_spend, centers=2)
+clust_customers <- model_customers$cluster
+segment_customers <- mutate(customers_spend, cluster = clust_customers)
+count(segment_customers, cluster)
+segment_customers %>% 
+  group_by(cluster) %>% 
+  summarise_all(funs(mean(.)))
+```
+  
+# Supervised Learning in R: Classification
+
+This section of the document contains useful code snippets related to Supervised Learning in *R* programming language. Reference includes:
+
+* [DataCamp](https://www.datacamp.com/home)
+
+## Classification Trees
+
+Building simple decision tree
+Load the rpart package
+Build a lending model predicting loan outcome versus loan amount and credit score
+Make a prediction for someone with good credit
+Make a prediction for someone with bad credit
+```{r eval = FALSE}
+library(rpart)
+loan_model <- rpart(outcome ~ loan_amount + credit_score, data = loans, method = "class", control = rpart.control(cp = 0))
+predict(loan_model, good_credit, type = "class")
+predict(loan_model, bad_credit, type = "class")```
+```
+Visualizing classification trees
+Load the rpart.plot package
+Plot the loan_model with customized settings
+```{r eval = FALSE}
+library(rpart.plot)
+rpart.plot(loan_model, type = 3, box.palette = c("red", "green"), fallen.leaves = TRUE)
+```
+Building and evaluating large trees
+Grow a tree using all of the available applicant data
+Make predictions on the test dataset
+Examine the confusion matrix
+Compute the accuracy on the test dataset
+```{r eval = FALSE}
+loan_model <- rpart(outcome ~ ., data = loans_train, method = "class", control = rpart.control(cp = 0))
+loans_test$pred <- predict(loan_model, loans_test, type="class")
+table(loans_test$pred, loans_test$outcome)
+mean(loans_test$pred == loans_test$outcome)
+```
+Preventing overgrown trees - Pre-pruning
+Grow a tree with maxdepth of 6
+Make a class prediction on the test set
+Compute the accuracy of the simpler tree
+```{r eval = FALSE}
+loan_model <- rpart(outcome ~ ., data = loans_train, method="class", control = rpart.control(cp=0, maxdepth=6))
+loans_test$pred <- predict(loan_model, loans_test, type="class")
+mean(loans_test$pred == loans_test$outcome)
+```
+Creating a nicely pruned tree - Post-pruning
+Grow an overly complex tree
+Examine the complexity plot
+Prune the tree
+Compute the accuracy of the pruned tree
+```{r eval = FALSE}
+loan_model <- rpart(outcome ~ ., data = loans_train, method = "class", control = rpart.control(cp = 0))
+plotcp(loan_model)
+loan_model_pruned <- prune(loan_model, cp = 0.0014)
+loans_test$pred <- predict(loan_model_pruned, loans_test, type="class")
+mean(loans_test$pred == loans_test$outcome)
+```
+Building a random forest model
+Load the randomForest package
+Build a random forest model
+Compute the accuracy of the random forest
+```{r eval = FALSE}
+library(randomForest)
+loan_model <- randomForest(outcome ~ ., data = loans_train)
+loans_test$pred <- predict(loan_model, loans_test)
+mean(loans_test$pred == loans_test$outcome)
+```
