@@ -1,0 +1,1418 @@
+<!DOCTYPE html>
+<!-- saved from url=(0051)http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd -->
+<html class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  
+  <script type="application/shiny-singletons"></script>
+  <script type="application/html-dependencies">json2[2014.02.04];jquery[1.12.4];shiny[1.3.2]</script>
+<script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/json2-min.js.download"></script>
+<script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/jquery.min.js.download"></script>
+<link href="./Exploratory Data Analysis - Gapminder Data_Complete_files/shiny.css" rel="stylesheet">
+<script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/shiny.min.js.download"></script>  <script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/rmd_loader.js.download"></script>
+  <link href="./Exploratory Data Analysis - Gapminder Data_Complete_files/rmd_loader.css" rel="stylesheet">
+
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" type="text/css" href="./Exploratory Data Analysis - Gapminder Data_Complete_files/flatly.min.css"><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/bootstrap.min.js.download"></script><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/html5shiv.min.js.download"></script><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/respond.min.js.download"></script><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/tabsets.js.download"></script><link rel="stylesheet" type="text/css" href="./Exploratory Data Analysis - Gapminder Data_Complete_files/selectize.bootstrap3.css"><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/selectize.min.js.download"></script><link rel="stylesheet" type="text/css" href="./Exploratory Data Analysis - Gapminder Data_Complete_files/ion.rangeSlider.css"><link rel="stylesheet" type="text/css" href="./Exploratory Data Analysis - Gapminder Data_Complete_files/ion.rangeSlider.skinShiny.css"><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/ion.rangeSlider.min.js.download"></script><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/strftime-min.js.download"></script><link rel="stylesheet" type="text/css" href="./Exploratory Data Analysis - Gapminder Data_Complete_files/rmd_perf.css"><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/rmd_perf.js.download"></script><meta name="rstudio_origin" content="127.0.0.1:29029"><script src="./Exploratory Data Analysis - Gapminder Data_Complete_files/rsiframe.js.download"></script>
+
+
+
+<meta name="generator" content="pandoc">
+
+
+<meta name="author" content="Rose Mariyappan">
+
+<meta name="date" content="2019-04-28">
+
+<title>Exploratory Data Analysis - Gapminder Data</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css" data-origin="pandoc">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #0000ff; } /* Keyword */
+code > span.ch { color: #008080; } /* Char */
+code > span.st { color: #008080; } /* String */
+code > span.co { color: #008000; } /* Comment */
+code > span.ot { color: #ff4000; } /* Other */
+code > span.al { color: #ff0000; } /* Alert */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #008000; font-weight: bold; } /* Warning */
+code > span.cn { } /* Constant */
+code > span.sc { color: #008080; } /* SpecialChar */
+code > span.vs { color: #008080; } /* VerbatimString */
+code > span.ss { color: #008080; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { } /* Variable */
+code > span.cf { color: #0000ff; } /* ControlFlow */
+code > span.op { } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #ff4000; } /* Preprocessor */
+code > span.do { color: #008000; } /* Documentation */
+code > span.an { color: #008000; } /* Annotation */
+code > span.cv { color: #008000; } /* CommentVar */
+code > span.at { } /* Attribute */
+code > span.in { color: #008000; } /* Information */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+<script type="text/javascript" src="./Exploratory Data Analysis - Gapminder Data_Complete_files/MathJax.js.download"></script><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+
+<body><div id="MathJax_Message" style="display: none;"></div>
+  <div>
+    <div data-display-if="!output.__reactivedoc__" data-ns-prefix="" style="display: none;">
+      <div id="rmd_loader_wrapper">
+        <div id="rmd_loader" style="">
+          <p>Please wait...</p>
+          <img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/rmd_loader.gif">
+        </div>
+      </div>
+    </div>
+    <div id="__reactivedoc__" class="shiny-html-output shiny-bound-output">
+
+
+
+
+
+
+
+<style type="text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<div class="container-fluid main-container">
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("section-TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+
+
+
+<div class="fluid-row" id="section-header">
+
+
+
+<h1 class="title toc-ignore">Exploratory Data Analysis - Gapminder Data</h1>
+<h4 class="author"><em>Rose Mariyappan</em></h4>
+<h4 class="date"><em>April 28, 2019</em></h4>
+
+</div>
+
+<div id="section-TOC">
+<ul>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-epicycle-of-analysis"><span class="toc-section-number">1</span> Epicycle of Analysis</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-introduction-to-gapminder-dataset"><span class="toc-section-number">2</span> Introduction to gapminder dataset</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-stating-the-question"><span class="toc-section-number">3</span> Stating the Question</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-install-packages"><span class="toc-section-number">4</span> Install Packages</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-load-the-packages-to-working-environment"><span class="toc-section-number">5</span> Load the Packages to working environment</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-import-gapminder-dataset"><span class="toc-section-number">6</span> Import gapminder dataset</a><ul>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-examine-structure-of-dataset"><span class="toc-section-number">6.1</span> Examine structure of dataset</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-look-at-the-data"><span class="toc-section-number">6.2</span> Look at the data</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-visualizing-raw-data"><span class="toc-section-number">6.3</span> Visualizing raw data</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-identify-trends"><span class="toc-section-number">6.4</span> Identify trends</a></li>
+</ul></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-building-statistical-models"><span class="toc-section-number">7</span> Building Statistical Models</a><ul>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-linear-regression"><span class="toc-section-number">7.1</span> Linear Regression</a><ul>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-correlation-regression"><span class="toc-section-number">7.1.1</span> Correlation Regression</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-visualize-correlation-regression"><span class="toc-section-number">7.1.2</span> Visualize Correlation Regression</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-model-diagnostics"><span class="toc-section-number">7.1.3</span> Model Diagnostics</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-tidying-the-linear-model"><span class="toc-section-number">7.1.4</span> Tidying the linear model</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-nesting-multiple-linear-models"><span class="toc-section-number">7.1.5</span> Nesting Multiple Linear Models</a></li>
+</ul></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-cluster-analysis"><span class="toc-section-number">7.2</span> Cluster Analysis</a><ul>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-prepare-data-for-cluster-analysis"><span class="toc-section-number">7.2.1</span> Prepare data for Cluster Analysis</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-k-means-clustering"><span class="toc-section-number">7.2.2</span> K-means clustering</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-hierarchical-clustering"><span class="toc-section-number">7.2.3</span> Hierarchical clustering</a></li>
+</ul></li>
+</ul></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-conclusion"><span class="toc-section-number">8</span> Conclusion</a></li>
+<li><a href="http://127.0.0.1:6237/DataAnalysisInR_gapminder.Rmd#section-references"><span class="toc-section-number">9</span> References</a></li>
+</ul>
+</div>
+
+<div id="section-epicycle-of-analysis" class="section level1">
+<h1><span class="header-section-number">1</span> Epicycle of Analysis</h1>
+<p>This document showcases the Epicycle of Analysis in R, as part of I590 Applied Data Science curriculum. We will be using gapminder dataset and perform exploratory analyses using different types of visualisations. We try to identify associations between different variables, more particularly Life Expectancy and Income in different regions.</p>
+<p>We will take step by step approach to perform this analysis as outlined below.</p>
+<ul>
+<li>Stating the question</li>
+<li>Importing dataset<br>
+</li>
+<li>Exploring raw data</li>
+<li>Cleaning data</li>
+<li>Data wrangling</li>
+<li>Building statistical models</li>
+<li>Visualizing</li>
+<li>Interpreting the results</li>
+<li>Communicating the results</li>
+</ul>
+<p>For educational purposes, we will make the code visible.</p>
+</div>
+<div id="section-introduction-to-gapminder-dataset" class="section level1">
+<h1><span class="header-section-number">2</span> Introduction to gapminder dataset</h1>
+<p>This dataset consists of following fields:</p>
+<ul>
+<li>Country - which country the observation is for</li>
+<li>Year - which year the measures are related to</li>
+<li>LifeExp - life expectancy at birth</li>
+<li>population - population of the country</li>
+<li>Income - income</li>
+<li>Region - which region the country is from</li>
+</ul>
+</div>
+<div id="section-stating-the-question" class="section level1">
+<h1><span class="header-section-number">3</span> Stating the Question</h1>
+<p>First step after looking at your dataset if to formulate the right question. This helps guide in the exploratory data analysis process to limit the number of paths can be taken with a sizeable data.</p>
+<p>The questions we would like to get answers from gapminder dataset are the following:</p>
+<ol style="list-style-type: decimal">
+<li>How did Life Expectancy and its distribution among countries evolve overall?</li>
+<li>How does Life Expectancy compare between different regions and countries?</li>
+<li>How is Life Expectancy influenced by other variables such as income?</li>
+</ol>
+</div>
+<div id="section-install-packages" class="section level1">
+<h1><span class="header-section-number">4</span> Install Packages</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"dplyr"</span>)
+<span class="kw">install.packages</span>(<span class="st">"tidyr"</span>)
+<span class="kw">install.packages</span>(<span class="st">"tidyverse"</span>)
+<span class="kw">install.packages</span>(<span class="st">"ggplot2"</span>)
+<span class="kw">install.packages</span>(<span class="st">"readr"</span>)    <span class="co"># read_csv</span>
+<span class="kw">install.packages</span>(<span class="st">"psych"</span>)    <span class="co"># describe</span>
+<span class="kw">install.packages</span>(<span class="st">"broom"</span>)
+<span class="kw">install.packages</span>(<span class="st">"Hmisc"</span>)
+<span class="kw">install.packages</span>(<span class="st">"purrr"</span>)
+<span class="kw">install.packages</span>(<span class="st">"rpart.plot"</span>) 
+<span class="kw">install.packages</span>(<span class="st">"shiny"</span>)      <span class="co"># interactive visualization</span>
+<span class="kw">install.packages</span>(<span class="st">"lmtest"</span>)
+<span class="kw">install.packages</span>(<span class="st">"cluster"</span>)    <span class="co"># clustering algorithms</span>
+<span class="kw">install.packages</span>(<span class="st">"factoextra"</span>) <span class="co"># clustering algorithms &amp; visualization</span></code></pre></div>
+</div>
+<div id="section-load-the-packages-to-working-environment" class="section level1">
+<h1><span class="header-section-number">5</span> Load the Packages to working environment</h1>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(<span class="st">"dplyr"</span>)
+<span class="kw">library</span>(<span class="st">"tidyr"</span>)
+<span class="kw">library</span>(<span class="st">"tidyverse"</span>)
+<span class="kw">library</span>(<span class="st">"ggplot2"</span>)
+<span class="kw">library</span>(<span class="st">"readr"</span>)
+<span class="kw">library</span>(<span class="st">"psych"</span>)
+<span class="kw">library</span>(<span class="st">"broom"</span>)
+<span class="kw">library</span>(<span class="st">"Hmisc"</span>)
+<span class="kw">library</span>(<span class="st">"purrr"</span>)
+<span class="kw">library</span>(<span class="st">"dendextend"</span>)
+<span class="kw">library</span>(<span class="st">"rpart"</span>)
+<span class="kw">library</span>(<span class="st">"rpart.plot"</span>)
+<span class="kw">library</span>(<span class="st">"shiny"</span>)
+<span class="kw">library</span>(<span class="st">"lmtest"</span>)
+<span class="kw">library</span>(<span class="st">"cluster"</span>)
+<span class="kw">library</span>(<span class="st">"factoextra"</span>)</code></pre></div>
+</div>
+<div id="section-import-gapminder-dataset" class="section level1">
+<h1><span class="header-section-number">6</span> Import gapminder dataset</h1>
+<p>The next step in the EDA is to read in the data. Data can come in messy, therefore examine the data and clean, if necessary.</p>
+<p><em>Import gapminder.csv file to <code>gapminder</code> data frame</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="st">"C:/Users/User/Desktop/MyDocuments/MSDS/Courses/AppliedDataScience/FinalReport/data/gapminder.csv"</span>)</code></pre></div>
+<div id="section-examine-structure-of-dataset" class="section level2">
+<h2><span class="header-section-number">6.1</span> Examine structure of dataset</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">class</span>(gapminder)</code></pre></div>
+<p><em>Class of the gapminder data frame is spec_tbl_df, tbl_df, tbl, data.frame</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">dim</span>(gapminder)</code></pre></div>
+<p><em>Dimension of gapminder data frame is 41284, 6</em></p>
+<p>Number of observations = 41284 Number of variables = 6</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">names</span>(gapminder)</code></pre></div>
+<p>Variables in gapminder data frame - country, year, lifeExp, pop, income, region</p>
+<p><em>Examine the structure of gapminder data frame using <code>str</code></em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(gapminder)</code></pre></div>
+<p><em>Convert character variables country and regions as factors and store in gapminder data frame</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder &lt;-<span class="st"> </span>gapminder <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">country =</span> <span class="kw">as.factor</span>(country), <span class="dt">region =</span> <span class="kw">as.factor</span>(region))</code></pre></div>
+<p><em><code>glimpse</code> is another great way to look at the data frame</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">glimpse</span>(gapminder)</code></pre></div>
+<p><em>Summary statistics of the data frame</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(gapminder)</code></pre></div>
+<pre><code>##                 country           year         lifeExp     
+##  Afghanistan        :  216   Min.   :1800   Min.   : 1.00  
+##  Albania            :  216   1st Qu.:1854   1st Qu.:31.00  
+##  Algeria            :  216   Median :1908   Median :35.12  
+##  Angola             :  216   Mean   :1907   Mean   :42.88  
+##  Antigua and Barbuda:  216   3rd Qu.:1962   3rd Qu.:55.60  
+##  Argentina          :  216   Max.   :2015   Max.   :84.10  
+##  (Other)            :39988                                 
+##       pop                income                              region     
+##  Min.   :1.548e+03   Min.   :   142   America                   : 7961  
+##  1st Qu.:5.335e+05   1st Qu.:   883   East Asia &amp; Pacific       : 6256  
+##  Median :3.358e+06   Median :  1450   Europe &amp; Central Asia     :10468  
+##  Mean   :2.119e+07   Mean   :  4571   Middle East &amp; North Africa: 4309  
+##  3rd Qu.:1.078e+07   3rd Qu.:  3483   South Asia                : 1728  
+##  Max.   :1.376e+09   Max.   :182668   Sub-Saharan Africa        :10562  
+##  NA's   :25817       NA's   :2341</code></pre>
+<p>Summary shows we have missing values in the gapminder dataset for pop &amp; income</p>
+<p><em>Dealing with missing values - removing missing values for this analysis</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder&lt;-<span class="st"> </span>gapminder <span class="op">%&gt;%</span><span class="st"> </span><span class="kw">drop_na</span>()</code></pre></div>
+<p><em>View summary again to ensure there are no NAs</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(gapminder)</code></pre></div>
+<p><em><code>describe</code> gives information about full range of data and adds other important statistics to the output. skew represents how close the median is to the mean.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">psych<span class="op">::</span><span class="kw">describe</span>(gapminder)</code></pre></div>
+</div>
+<div id="section-look-at-the-data" class="section level2">
+<h2><span class="header-section-number">6.2</span> Look at the data</h2>
+<p><em>View the first 15 rows using <code>head</code></em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">head</span>(gapminder, <span class="dt">n =</span> <span class="dv">15</span>)</code></pre></div>
+<p><em>View the last 15 rows using <code>tail</code></em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">tail</span>(gapminder, <span class="dt">n =</span> <span class="dv">15</span>)</code></pre></div>
+</div>
+<div id="section-visualizing-raw-data" class="section level2">
+<h2><span class="header-section-number">6.3</span> Visualizing raw data</h2>
+<p><em>plot histogram of population</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(pop)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"histogram of population"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-16-1.png" width="672"></p>
+<p>This data is highly skewed, with extremely long tails. This makes sense since some countries have small population while some contain significant amount of world’s population.</p>
+<p><em>Transform the skewed pop variable using log function to see its distribution</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">ggplot</span>(<span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">log</span>(pop))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">alpha =</span> <span class="fl">0.3</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"density plot for population"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-17-1.png" width="672"></p>
+<p>The distribution looks much normally distributed after log tranformation.</p>
+<p><em>Plot histogram of lifeExp</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(lifeExp)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"histogram of lifeExp"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-18-1.png" width="672"></p>
+<p>LifeExp count seems maximum around 70’s.</p>
+<p><em>Histogram of LifeExp Using Shiny</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">inputPanel</span>(
+  <span class="kw">selectInput</span>(<span class="st">"n_breaks"</span>, <span class="dt">label =</span> <span class="st">"Number of bins:"</span>,
+              <span class="dt">choices =</span> <span class="kw">c</span>(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">35</span>, <span class="dv">50</span>), <span class="dt">selected =</span> <span class="dv">20</span>),
+
+  <span class="kw">sliderInput</span>(<span class="st">"bw_adjust"</span>, <span class="dt">label =</span> <span class="st">"Bandwidth adjustment:"</span>,
+              <span class="dt">min =</span> <span class="fl">0.2</span>, <span class="dt">max =</span> <span class="dv">2</span>, <span class="dt">value =</span> <span class="dv">1</span>, <span class="dt">step =</span> <span class="fl">0.2</span>)
+)</code></pre></div>
+<div class="shiny-input-panel">
+<div class="shiny-flow-layout">
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" for="n_breaks-selectized">Number of bins:</label>
+<div>
+<select id="n_breaks" tabindex="-1" class="selectized shiny-bound-input" style="display: none;"><option value="20" selected="selected">20</option></select><div class="selectize-control single"><div class="selectize-input items full has-options has-items"><div class="item" data-value="20">20</div><input type="text" autocomplete="off" tabindex="" id="n_breaks-selectized" class="shiny-bound-input" style="width: 4px;"></div><div class="selectize-dropdown single" style="display: none;"><div class="selectize-dropdown-content"></div></div></div>
+<script type="application/json" data-for="n_breaks" data-nonempty="">{}</script>
+</div>
+</div>
+</div>
+<div>
+<div class="form-group shiny-input-container">
+<label class="control-label" for="bw_adjust">Bandwidth adjustment:</label>
+<span class="irs js-irs-0  irs-with-grid"><span class="irs"><span class="irs-line" tabindex="0"><span class="irs-line-left"></span><span class="irs-line-mid"></span><span class="irs-line-right"></span></span><span class="irs-min" style="visibility: visible;">0.2</span><span class="irs-max" style="visibility: visible;">2</span><span class="irs-from" style="visibility: hidden;">0</span><span class="irs-to" style="visibility: hidden;">0</span><span class="irs-single" style="left: 42.1474%;">1</span></span><span class="irs-grid" style="width: 89.4231%; left: 5.18846%;"><span class="irs-grid-pol" style="left: 0%"></span><span class="irs-grid-text js-grid-text-0" style="left: 0%; margin-left: -4.56731%;">0.2</span><span class="irs-grid-pol small" style="left: 7.4074074074074066%"></span><span class="irs-grid-pol small" style="left: 3.7037037037037033%"></span><span class="irs-grid-pol" style="left: 11.11111111111111%"></span><span class="irs-grid-text js-grid-text-1" style="left: 11.1111%; visibility: visible; margin-left: -4.56731%;">0.4</span><span class="irs-grid-pol small" style="left: 18.51851851851852%"></span><span class="irs-grid-pol small" style="left: 14.814814814814813%"></span><span class="irs-grid-pol" style="left: 22.22222222222222%"></span><span class="irs-grid-text js-grid-text-2" style="left: 22.2222%; visibility: visible; margin-left: -4.56731%;">0.6</span><span class="irs-grid-pol small" style="left: 29.629629629629626%"></span><span class="irs-grid-pol small" style="left: 25.925925925925924%"></span><span class="irs-grid-pol" style="left: 33.33333333333333%"></span><span class="irs-grid-text js-grid-text-3" style="left: 33.3333%; visibility: visible; margin-left: -4.56731%;">0.8</span><span class="irs-grid-pol small" style="left: 40.74074074074074%"></span><span class="irs-grid-pol small" style="left: 37.03703703703703%"></span><span class="irs-grid-pol" style="left: 44.44444444444444%"></span><span class="irs-grid-text js-grid-text-4" style="left: 44.4444%; margin-left: -2.64423%;">1</span><span class="irs-grid-pol small" style="left: 51.851851851851855%"></span><span class="irs-grid-pol small" style="left: 48.148148148148145%"></span><span class="irs-grid-pol" style="left: 55.55555555555556%"></span><span class="irs-grid-text js-grid-text-5" style="left: 55.5556%; visibility: visible; margin-left: -4.56731%;">1.2</span><span class="irs-grid-pol small" style="left: 62.962962962962955%"></span><span class="irs-grid-pol small" style="left: 59.25925925925926%"></span><span class="irs-grid-pol" style="left: 66.66666666666666%"></span><span class="irs-grid-text js-grid-text-6" style="left: 66.6667%; visibility: visible; margin-left: -4.56731%;">1.4</span><span class="irs-grid-pol small" style="left: 74.07407407407406%"></span><span class="irs-grid-pol small" style="left: 70.37037037037037%"></span><span class="irs-grid-pol" style="left: 77.77777777777777%"></span><span class="irs-grid-text js-grid-text-7" style="left: 77.7778%; visibility: visible; margin-left: -4.56731%;">1.6</span><span class="irs-grid-pol small" style="left: 85.18518518518518%"></span><span class="irs-grid-pol small" style="left: 81.48148148148148%"></span><span class="irs-grid-pol" style="left: 88.88888888888889%"></span><span class="irs-grid-text js-grid-text-8" style="left: 88.8889%; margin-left: -4.56731%;">1.8</span><span class="irs-grid-pol small" style="left: 96.29629629629629%"></span><span class="irs-grid-pol small" style="left: 92.5925925925926%"></span><span class="irs-grid-pol" style="left: 100%"></span><span class="irs-grid-text js-grid-text-9" style="left: 100%; visibility: visible; margin-left: -2.64423%;">2</span></span><span class="irs-bar" style="left: 5.28846%; width: 39.7436%;"></span><span class="irs-bar-edge"></span><span class="irs-shadow shadow-single" style="display: none;"></span><span class="irs-slider single" style="left: 39.7436%;"></span></span><input class="js-range-slider irs-hidden-input shiny-bound-input" id="bw_adjust" data-min="0.2" data-max="2" data-from="1" data-step="0.2" data-grid="true" data-grid-num="9" data-grid-snap="false" data-prettify-separator="," data-prettify-enabled="true" data-keyboard="true" data-data-type="number" tabindex="-1" readonly="">
+</div>
+</div>
+</div>
+</div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">renderPlot</span>({
+  <span class="kw">hist</span>(gapminder<span class="op">$</span>lifeExp, <span class="dt">probability =</span> <span class="ot">TRUE</span>, <span class="dt">breaks =</span> <span class="kw">as.numeric</span>(input<span class="op">$</span>n_breaks),
+       <span class="dt">xlab =</span> <span class="st">"Life Expectancy (in Years)"</span>, <span class="dt">main =</span> <span class="st">"Histogram of Life Expectancy using Shiny"</span>)
+  
+  dens &lt;-<span class="st"> </span><span class="kw">density</span>(gapminder<span class="op">$</span>lifeExp, <span class="dt">adjust =</span> input<span class="op">$</span>bw_adjust)
+  <span class="kw">lines</span>(dens, <span class="dt">col =</span> <span class="st">"blue"</span>)
+})</code></pre></div>
+<div id="out9cdb3eb109433525" class="shiny-plot-output shiny-bound-output" style="width: 100% ; height: 400px"><img src="data:image/png;base64,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" width="940" height="400"></div>
+<p><em>Plot histogram of income</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(income)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_histogram</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"histogram of income"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-20-1.png" width="672"></p>
+<p>Income is also unevenly distributed.</p>
+<p><em>Boxplot of lifeExp in various regions</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> region, <span class="dt">y =</span> lifeExp)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_boxplot</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"boxplot of lifeExp in various regions"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-21-1.png" width="672"></p>
+<p>That explains since different countries can have different range of income.</p>
+<p><em>overlaid density plots of lifeExp in various regions</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> lifeExp, <span class="dt">fill =</span> region)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_density</span>(<span class="dt">alpha=</span><span class="fl">0.3</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"density plot of lifeExp in regions"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-22-1.png" width="672"></p>
+</div>
+<div id="section-identify-trends" class="section level2">
+<h2><span class="header-section-number">6.4</span> Identify trends</h2>
+<p><em>Start looking for obvious patterns</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">pairs</span>(gapminder[, <span class="dv">2</span><span class="op">:</span><span class="dv">5</span>])</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-23-1.png" width="672"></p>
+<p>We can see some obvious trends. All variables are increasing over time. lifeExp goes up as income goes up.</p>
+<p><em>Let’s check the correlation between the variables.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cor</span>(gapminder[, <span class="dv">2</span><span class="op">:</span><span class="dv">5</span>])</code></pre></div>
+<pre><code>##               year    lifeExp         pop      income
+## year    1.00000000 0.78135848  0.09387174  0.29858685
+## lifeExp 0.78135848 1.00000000  0.07287485  0.51202398
+## pop     0.09387174 0.07287485  1.00000000 -0.01142595
+## income  0.29858685 0.51202398 -0.01142595  1.00000000</code></pre>
+<p><em>Here’s another way to visualize the correlation between variables</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">CorMatrix &lt;-<span class="st"> </span>broom<span class="op">::</span><span class="kw">tidy</span>(<span class="kw">cor</span>(gapminder[, <span class="dv">2</span><span class="op">:</span><span class="dv">5</span>])) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">rename</span>(<span class="dt">Var1 =</span> <span class="st">".rownames"</span>) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">gather</span>(Var2, Cor, <span class="op">-</span>Var1)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">CorMatrix</code></pre></div>
+<pre><code>## # A tibble: 16 x 3
+##    Var1    Var2        Cor
+##    &lt;chr&gt;   &lt;chr&gt;     &lt;dbl&gt;
+##  1 year    year     1     
+##  2 lifeExp year     0.781 
+##  3 pop     year     0.0939
+##  4 income  year     0.299 
+##  5 year    lifeExp  0.781 
+##  6 lifeExp lifeExp  1     
+##  7 pop     lifeExp  0.0729
+##  8 income  lifeExp  0.512 
+##  9 year    pop      0.0939
+## 10 lifeExp pop      0.0729
+## 11 pop     pop      1     
+## 12 income  pop     -0.0114
+## 13 year    income   0.299 
+## 14 lifeExp income   0.512 
+## 15 pop     income  -0.0114
+## 16 income  income   1</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(CorMatrix, <span class="kw">aes</span>(Var1, Var2, <span class="dt">fill =</span> Cor)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_tile</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"correlation between variables"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-27-1.png" width="672"></p>
+<p>strongest correlation is between lifeExp and year. lifeExp and income is moderately correlated.</p>
+<p><em>Let’s visualize the trend between income and lifeExp using ggplot.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(income, lifeExp)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_jitter</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"trend between income and lifeExp"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-28-1.png" width="672"></p>
+<p><em>What happens if we color these by year.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(income, lifeExp, <span class="dt">col=</span>year)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_jitter</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"trend between incom, lifeExp by year"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-29-1.png" width="672"></p>
+<p>Shows increasing trend in lifeExp by years.</p>
+<p><em>Let’s look at this by region and also taking log of income values.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="kw">log</span>(income), lifeExp, <span class="dt">col=</span>year)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_jitter</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>region) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"trend between log(income), lifeExp by year"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-30-1.png" width="672"></p>
+<p>It looks like Middle East &amp; North Africa, Sub-Saharn Africa regions have lower average life expectancy than others.</p>
+<p><em>median lifeExp by region</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">aggregate</span>(lifeExp <span class="op">~</span><span class="st"> </span>region, gapminder, median)</code></pre></div>
+<pre><code>##                       region  lifeExp
+## 1                    America 66.87270
+## 2        East Asia &amp; Pacific 62.37814
+## 3      Europe &amp; Central Asia 69.80000
+## 4 Middle East &amp; North Africa 64.13142
+## 5                 South Asia 52.06396
+## 6         Sub-Saharan Africa 51.00000</code></pre>
+<p><em>median of lifeExp by region in the year 2007</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">filter</span>(year <span class="op">==</span><span class="st"> </span><span class="dv">2007</span>) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">group_by</span>(region) <span class="op">%&gt;%</span>
+<span class="st">    </span><span class="kw">summarise</span>(<span class="dt">lifeExp =</span> <span class="kw">median</span>(lifeExp))</code></pre></div>
+<pre><code>## # A tibble: 6 x 2
+##   region                     lifeExp
+##   &lt;fct&gt;                        &lt;dbl&gt;
+## 1 America                       74.6
+## 2 East Asia &amp; Pacific           69.4
+## 3 Europe &amp; Central Asia         75.9
+## 4 Middle East &amp; North Africa    76.1
+## 5 South Asia                    67.7
+## 6 Sub-Saharan Africa            57.9</code></pre>
+<p><em>Visualize the lifeExp plot by region that also highlights the outliers in <code>hotpink</code></em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> region, <span class="dt">y =</span> lifeExp)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_boxplot</span>(<span class="dt">outlier.colour =</span> <span class="st">"hotpink"</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_jitter</span>(<span class="dt">position =</span> <span class="kw">position_jitter</span>(<span class="dt">width =</span> <span class="fl">0.1</span>, <span class="dt">height =</span> <span class="dv">0</span>), <span class="dt">alpha =</span> <span class="dv">1</span><span class="op">/</span><span class="dv">4</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"lifeExp plot by region with outliers"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-33-1.png" width="672"></p>
+<p>This shows high average lifeExp for Europe and Central Asia regions.</p>
+<p><em>lifeExp over the years by region</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> year, <span class="dt">y =</span> lifeExp, <span class="dt">group =</span> country, <span class="dt">color =</span> country)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">lwd =</span> <span class="dv">1</span>, <span class="dt">show.legend =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span><span class="kw">facet_wrap</span>(<span class="op">~</span><span class="st"> </span>region) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_bw</span>() <span class="op">+</span><span class="st"> </span><span class="kw">theme</span>(<span class="dt">strip.text =</span> <span class="kw">element_text</span>(<span class="dt">size =</span> <span class="kw">rel</span>(<span class="fl">1.1</span>))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"lifeExp over the years by region"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-34-1.png" width="672"></p>
+<p>lifeExp has dramatically increased over the years in all regions</p>
+<p><em>Let’s look at population over the years by region.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span>pop, <span class="dt">color=</span>region)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">se=</span><span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"population over the years by region"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-35-1.png" width="672"></p>
+<p>All regions show steady population increase over the years.</p>
+<p><em>Below shows steady population (mean values) increase over the years in all regions</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x=</span>year, <span class="dt">y=</span><span class="kw">log</span>(pop), <span class="dt">col=</span>region, <span class="dt">group=</span>region, <span class="dt">fill =</span> region)) <span class="op">+</span>
+<span class="kw">stat_summary</span>(<span class="dt">fun.y =</span> mean, <span class="dt">geom=</span><span class="st">"line"</span>, <span class="dt">size=</span><span class="fl">1.1</span>) <span class="op">+</span>
+<span class="kw">stat_summary</span>(<span class="dt">fun.data=</span>mean_sdl, <span class="dt">fun.args=</span><span class="kw">list</span>(<span class="dt">mult=</span><span class="dv">1</span>), <span class="dt">geom=</span><span class="st">"ribbon"</span>, <span class="dt">col=</span><span class="ot">NA</span>, <span class="dt">alpha=</span><span class="fl">0.1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"mean population over the years by region"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-36-1.png" width="672"></p>
+</div>
+</div>
+<div id="section-building-statistical-models" class="section level1">
+<h1><span class="header-section-number">7</span> Building Statistical Models</h1>
+<p>Perform statistical tests on the dataset using different methods, diagnose the models and interpret findings.</p>
+<div id="section-linear-regression" class="section level2">
+<h2><span class="header-section-number">7.1</span> Linear Regression</h2>
+<p>This section describes how to perform data analysis using linear regression models.</p>
+<div id="section-correlation-regression" class="section level3">
+<h3><span class="header-section-number">7.1.1</span> Correlation Regression</h3>
+<p><em>Perform correlation test to see if the correlations are statistically significant</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">cor.test</span>(gapminder<span class="op">$</span>lifeExp, gapminder<span class="op">$</span>income)</code></pre></div>
+<pre><code>## 
+##  Pearson's product-moment correlation
+## 
+## data:  gapminder$lifeExp and gapminder$income
+## t = 72.129, df = 14642, p-value &lt; 2.2e-16
+## alternative hypothesis: true correlation is not equal to 0
+## 95 percent confidence interval:
+##  0.4999737 0.5238761
+## sample estimates:
+##      cor 
+## 0.512024</code></pre>
+<p>Yes, the p-value is less than 0.05 and therefore statistically significant.</p>
+<p><em>Perform ANOVA test to check if the correlations are different in other regions. Modeling lifeExp as a function of region.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">aov</span>(lifeExp <span class="op">~</span><span class="st"> </span>region, <span class="dt">data =</span> gapminder)</code></pre></div>
+<pre><code>## Call:
+##    aov(formula = lifeExp ~ region, data = gapminder)
+## 
+## Terms:
+##                  region Residuals
+## Sum of Squares   553059   2935915
+## Deg. of Freedom       5     14638
+## 
+## Residual standard error: 14.1622
+## Estimated effects may be unbalanced</code></pre>
+<p>lifeExp is the dependent variable, region as independent variable</p>
+<p><em>Let’s check the correlation between lifeExp for all regions.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(<span class="kw">aov</span>(lifeExp <span class="op">~</span><span class="st"> </span>region, <span class="dt">data =</span> gapminder))</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: lifeExp
+##              Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## region        5  553059  110612  551.49 &lt; 2.2e-16 ***
+## Residuals 14638 2935915     201                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+<p>Looks like all regions does have a significant effect on life expectancy!</p>
+<p><em>Analysis can be done using <code>lm</code> functon - seeing similar results</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">anova</span>(<span class="kw">lm</span>(lifeExp <span class="op">~</span><span class="st"> </span>region, <span class="dt">data =</span> gapminder))</code></pre></div>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: lifeExp
+##              Df  Sum Sq Mean Sq F value    Pr(&gt;F)    
+## region        5  553059  110612  551.49 &lt; 2.2e-16 ***
+## Residuals 14638 2935915     201                      
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
+</div>
+<div id="section-visualize-correlation-regression" class="section level3">
+<h3><span class="header-section-number">7.1.2</span> Visualize Correlation Regression</h3>
+<p><em>To see effect of income on lifeExp</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm_fit1 &lt;-<span class="st"> </span><span class="kw">lm</span>(lifeExp <span class="op">~</span><span class="st"> </span>income, <span class="dt">data =</span> gapminder)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(lm_fit1)</code></pre></div>
+<p>lifeExp is the dependent variable, income is the independent variable from gapminder dataset. R-squared is 0.26 hence the model performs poorly.</p>
+<p><em>Plot the linear model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(income, lifeExp)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_jitter</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"linear model for lifeExp by income"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-43-1.png" width="672"></p>
+<p>Seems like a bad fit, also since all data seem to be concentrated near y-axis.</p>
+<p><em>Plot the model with log values to see the difference</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="kw">log</span>(income), lifeExp)) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_jitter</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme</span>(<span class="dt">plot.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">"coral"</span>, <span class="dt">color =</span> <span class="st">"blueviolet"</span>, <span class="dt">size =</span> <span class="dv">2</span>), 
+                      <span class="dt">axis.title.y =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">"red"</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">face =</span> <span class="st">"italic"</span>),
+                    <span class="dt">axis.title.x =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">"red"</span>, <span class="dt">hjust =</span> <span class="fl">0.5</span>, <span class="dt">face =</span> <span class="st">"italic"</span>),
+                    <span class="dt">axis.text =</span> <span class="kw">element_text</span>(<span class="dt">color =</span> <span class="st">"black"</span>),
+                    <span class="dt">legend.position =</span> <span class="st">"none"</span>,
+  <span class="dt">panel.background =</span> <span class="kw">element_rect</span>(<span class="dt">fill =</span> <span class="st">"transparent"</span>,<span class="dt">colour =</span> <span class="ot">NA</span>), <span class="co"># or theme_blank()</span>
+    <span class="dt">panel.grid.minor =</span> <span class="kw">element_blank</span>(), 
+    <span class="dt">panel.grid.major =</span><span class="kw">element_blank</span>()) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"linear model for lifeExp and income"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-44-1.png" width="672"></p>
+<p>This looks much better to visualize.</p>
+<p><em>To see effect of two continuous variables income and year on lifeExp, we can use multiple regression.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm_fit2 &lt;-<span class="st"> </span><span class="kw">lm</span>(lifeExp <span class="op">~</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span>year, <span class="dt">data =</span> gapminder)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(lm_fit2)</code></pre></div>
+<p>lifeExp is the dependent variable, income and year as the 2 independent variables from gapminder dataset. R-squared is 0.70, much better than the previous model. Both income and year are significant predictors of life expectancy. Intercept is what lifeExp value would be when both income and year were 0. Coefficient is how much lifeExp increase for 1 unit increase in income and 1 unit increase year. Here, life expectancy increases by 3.122e-04 for every 1 unit increase in income. Life expectancy increases by 2.118e-01 for each unit increase in year.</p>
+<p><em>Income life expectancy over the years</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">log</span>(income), <span class="dt">y =</span> lifeExp, <span class="dt">col =</span> year)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="kw">aes</span>(<span class="dt">group =</span> <span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"linear model for lifeExp, income over the years"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-47-1.png" width="672"></p>
+<p>Life expectancy by income and year shows positive linear relationship</p>
+<p><em>Let’s also check the income life expectancy by regions</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gapminder, <span class="kw">aes</span>(<span class="dt">x =</span> <span class="kw">log</span>(income), <span class="dt">y =</span> lifeExp, <span class="dt">col =</span> region)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>) <span class="op">+</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">geom_smooth</span>(<span class="dt">method =</span> <span class="st">"lm"</span>, <span class="dt">se =</span> <span class="ot">FALSE</span>, <span class="dt">lty =</span> <span class="dv">2</span>, <span class="kw">aes</span>(<span class="dt">group =</span> <span class="dv">1</span>)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(.<span class="op">~</span>region) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"linear model for lifeExp, income by regions"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-48-1.png" width="672"></p>
+<p>This plot also shows linear relationship by region.</p>
+<p><em>Therefore let’s check out the 3 interaction terms if the model improves.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm_fit3 &lt;-<span class="st"> </span><span class="kw">lm</span>(lifeExp <span class="op">~</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>region <span class="op">+</span><span class="st"> </span>income<span class="op">:</span>year <span class="op">+</span><span class="st"> </span>income<span class="op">:</span>region <span class="op">+</span><span class="st"> </span>year<span class="op">:</span>region <span class="op">+</span><span class="st"> </span>income<span class="op">:</span>year<span class="op">:</span>region, <span class="dt">data =</span> gapminder)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(lm_fit3)</code></pre></div>
+<p>lifeExp is the dependent variable, income, year and region as the 3 independent variables from gapminder dataset. R2 is 0.83. Interactions between the 3 variables explain a lot of variance in the data. 83% of the variability in lifeExp is explained by year, income and region.</p>
+</div>
+<div id="section-model-diagnostics" class="section level3">
+<h3><span class="header-section-number">7.1.3</span> Model Diagnostics</h3>
+<p>Assumptions of linear regression, are stated as,</p>
+<ul>
+<li><strong>L</strong>inearity - the response can be written as a linear combination of the predictors.</li>
+<li><strong>I</strong>ndependence - errors are independent</li>
+<li><strong>N</strong>ormality - distribution of errors should follow a normal distribution</li>
+<li><strong>E</strong>qual Variance - the error variance is the same at any set of predictor values</li>
+</ul>
+<p>Checking Assumptions:</p>
+<ol style="list-style-type: decimal">
+<li>Fitted versus Residuals Plot - useful for checking both the linearity and constant variance assumptions. Data generated from Model using 3 interaction terms above should not show any signs of violating assumptions, so we’ll use this to see what a good fitted versus residuals plot should look like.</li>
+</ol>
+<p><em>Fit the model and add the fitted line to a scatterplot.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="kw">fitted</span>(lm_fit3), <span class="kw">resid</span>(lm_fit3), <span class="dt">col =</span> <span class="st">"grey"</span>, <span class="dt">pch =</span> <span class="dv">20</span>,
+     <span class="dt">xlab =</span> <span class="st">"Fitted"</span>, <span class="dt">ylab =</span> <span class="st">"Residuals"</span>, <span class="dt">main =</span> <span class="st">"Data from 3 Interaction term Model"</span>)
+<span class="kw">abline</span>(<span class="dt">h =</span> <span class="dv">0</span>, <span class="dt">col =</span> <span class="st">"darkorange"</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-51-1.png" width="672"></p>
+<p>At every fitted value, the spread of the residuals should be roughly the same. If this is the case, the constant variance assumption is valid. We don’t see the spread even though the model performs well.</p>
+<p><em>Does Mean of lifeExp equals to mean of fitted values?</em> TRUE</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(gapminder<span class="op">$</span>lifeExp) <span class="op">==</span><span class="st"> </span><span class="kw">mean</span>(<span class="kw">fitted.values</span>(lm_fit3))</code></pre></div>
+<p>Mean of the residuals is -5.385072410^{-16}. If zero (close to zero), the linearity assumption is valid as in this case.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">mean</span>(<span class="kw">residuals</span>(lm_fit3))</code></pre></div>
+<p>The least squares fitting procedure guarantees that the mean of the residuals is closer to zero. At the same time, the mean of the fitted values must equal the mean of the response variable. Our results prove the same.</p>
+<p><em>Breusch-Pagan Test - Testing for homoscedasticity (constant variance)</em></p>
+<p><em>Let’s test on 3 interaction term model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">bptest</span>(lm_fit3)</code></pre></div>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  lm_fit3
+## BP = 1767.5, df = 23, p-value &lt; 2.2e-16</code></pre>
+<p>For lm_fit3 we see a small p-value, so we reject the null of homoscedasticity. The constant variance assumption is violated. This matches our findings with a fitted versus residuals plot.</p>
+<p><em>Testing for normality assumption - on all 3 models</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))
+<span class="kw">hist</span>(<span class="kw">resid</span>(lm_fit1),
+     <span class="dt">xlab   =</span> <span class="st">"Residuals"</span>,
+     <span class="dt">main   =</span> <span class="st">"lifeExp-income"</span>,
+     <span class="dt">col    =</span> <span class="st">"darkorange"</span>,
+     <span class="dt">border =</span> <span class="st">"dodgerblue"</span>,
+     <span class="dt">breaks =</span> <span class="dv">20</span>)
+<span class="kw">hist</span>(<span class="kw">resid</span>(lm_fit2),
+     <span class="dt">xlab   =</span> <span class="st">"Residuals"</span>,
+     <span class="dt">main   =</span> <span class="st">"life-income/year"</span>,
+     <span class="dt">col    =</span> <span class="st">"darkorange"</span>,
+     <span class="dt">border =</span> <span class="st">"dodgerblue"</span>,
+     <span class="dt">breaks =</span> <span class="dv">20</span>)
+<span class="kw">hist</span>(<span class="kw">resid</span>(lm_fit3),
+     <span class="dt">xlab   =</span> <span class="st">"Residuals"</span>,
+     <span class="dt">main   =</span> <span class="st">"life-income/year/region"</span>,
+     <span class="dt">col    =</span> <span class="st">"darkorange"</span>,
+     <span class="dt">border =</span> <span class="st">"dodgerblue"</span>,
+     <span class="dt">breaks =</span> <span class="dv">20</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-55-1.png" width="672"></p>
+<p>Above are histograms for each of the three regression we have been considering. The third, for lm_fit3, appears somewhat normal than other 2 models. However all 3 are not as clear. For this reason we will usually use more powerful tools such as Q-Q plots and the Shapiro-Wilk test for assessing the normality of errors.</p>
+<p><em>Testing for normality assumption - Q-Q plots</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>, <span class="dv">3</span>))
+<span class="kw">qqnorm</span>(<span class="kw">resid</span>(lm_fit1), <span class="dt">main =</span> <span class="st">"Q-Q, lifeExp-income"</span>, <span class="dt">col =</span> <span class="st">"darkgrey"</span>)
+<span class="kw">qqline</span>(<span class="kw">resid</span>(lm_fit1), <span class="dt">col =</span> <span class="st">"dodgerblue"</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)
+<span class="kw">qqnorm</span>(<span class="kw">resid</span>(lm_fit2), <span class="dt">main =</span> <span class="st">"Q-Q, lifeExp-income/year"</span>, <span class="dt">col =</span> <span class="st">"darkgrey"</span>)
+<span class="kw">qqline</span>(<span class="kw">resid</span>(lm_fit2), <span class="dt">col =</span> <span class="st">"dodgerblue"</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)
+<span class="kw">qqnorm</span>(<span class="kw">resid</span>(lm_fit3), <span class="dt">main =</span> <span class="st">"Q-Q, lifeExp-income/year/region"</span>, <span class="dt">col =</span> <span class="st">"darkgrey"</span>)
+<span class="kw">qqline</span>(<span class="kw">resid</span>(lm_fit3), <span class="dt">col =</span> <span class="st">"dodgerblue"</span>, <span class="dt">lwd =</span> <span class="dv">2</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-56-1.png" width="672"></p>
+<p>As seen above lm_fit3 seems to have points close to the line compared to the other 2 models.</p>
+<p><em>Shapiro-Wilk Test - Another test for residuals distribution</em></p>
+<p>However, the sample size must be between 3 and 5000 for this test. In our case, number of observations is much greater.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">shapiro.test</span>(<span class="kw">resid</span>(lm_fit1))
+<span class="kw">shapiro.test</span>(<span class="kw">resid</span>(lm_fit2))
+<span class="kw">shapiro.test</span>(<span class="kw">resid</span>(lm_fit3))</code></pre></div>
+<p><em>Checking for “unusual observations” - leverage, influential, outliers</em></p>
+<p>Points of large leverage and large residual</p>
+<p><em>Model 1</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">hatvalues</span>(lm_fit1) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(<span class="kw">hatvalues</span>(lm_fit1)))</code></pre></div>
+<pre><code>## [1] 793</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">abs</span>(<span class="kw">rstandard</span>(lm_fit1)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] 426</code></pre>
+<p>793 points of large leverage in the first model. 426 points with large residual.</p>
+<p><em>Model 2</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">hatvalues</span>(lm_fit2) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(<span class="kw">hatvalues</span>(lm_fit2)))</code></pre></div>
+<pre><code>## [1] 1367</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">abs</span>(<span class="kw">rstandard</span>(lm_fit2)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] 403</code></pre>
+<p>1367 points of large leverage in the second model. 403 points with large residual.</p>
+<p><em>Model 3</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">hatvalues</span>(lm_fit3) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span> <span class="op">*</span><span class="st"> </span><span class="kw">mean</span>(<span class="kw">hatvalues</span>(lm_fit3)))</code></pre></div>
+<pre><code>## [1] 1442</code></pre>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">sum</span>(<span class="kw">abs</span>(<span class="kw">rstandard</span>(lm_fit3)) <span class="op">&gt;</span><span class="st"> </span><span class="dv">2</span>)</code></pre></div>
+<pre><code>## [1] 729</code></pre>
+<p>1442 points of large leverage in the third model. 729 points with large residual.</p>
+<p><em>Check <code>cooks.distance</code> to see if these points are influential. Let’s take <code>lm_fit3</code> to verify this.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cd_lm_fit3 =<span class="st"> </span><span class="kw">cooks.distance</span>(lm_fit3)
+<span class="kw">sum</span>(cd_lm_fit3 <span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span> <span class="op">/</span><span class="st"> </span><span class="kw">length</span>(cd_lm_fit3))</code></pre></div>
+<pre><code>## [1] 879</code></pre>
+<p>There seems 879 influential points in model 3 (our 3 interaction model.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">large_cd_fit3 =<span class="st"> </span>cd_lm_fit3 <span class="op">&gt;</span><span class="st"> </span><span class="dv">4</span> <span class="op">/</span><span class="st"> </span><span class="kw">length</span>(cd_lm_fit3)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cd_lm_fit3[large_cd_fit3]</code></pre></div>
+<p>This fetches all rows in the model 3 that are influential.</p>
+<p><em>Check the coefficients of model 3</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(lm_fit3)</code></pre></div>
+<p><em>Check the coefficients of model 3 after fixing/removing influential points</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm_fit3_fix &lt;-<span class="st"> </span><span class="kw">lm</span>(lifeExp <span class="op">~</span><span class="st"> </span>income <span class="op">+</span><span class="st"> </span>year <span class="op">+</span><span class="st"> </span>region <span class="op">+</span><span class="st"> </span>income<span class="op">:</span>year <span class="op">+</span><span class="st"> </span>income<span class="op">:</span>region <span class="op">+</span><span class="st"> </span>year<span class="op">:</span>region <span class="op">+</span><span class="st"> </span>income<span class="op">:</span>year<span class="op">:</span>region, <span class="dt">data =</span> gapminder, <span class="dt">subset =</span> cd_lm_fit3 <span class="op">&lt;=</span><span class="st"> </span><span class="dv">4</span> <span class="op">/</span><span class="st"> </span><span class="kw">length</span>(cd_lm_fit3))</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">coef</span>(lm_fit3_fix)</code></pre></div>
+<p>Comparing coefficients of model 3 <code>lm_fit3</code> and model 3 <code>lm_fit3_fix</code> after removing influential points. There seems significant impact on the slope after removing influential points.</p>
+<p><em>Checking summary of <code>lm_fit3_fix</code> - model after removing influential points.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(lm_fit3_fix)
+<span class="kw">summary</span>(lm_fit3)</code></pre></div>
+<p>R-squared for model after removing influential points is 0.86 compared to the original model which had R-squared value of 0.83.</p>
+<p><em>Plot the diagnostics for <code>lm_fit3</code> - Model 3</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
+<span class="kw">plot</span>(lm_fit3, <span class="dt">main=</span><span class="st">"original model"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-68-1.png" width="672"></p>
+<p><em>Plot the diagnostics for <code>lm_fit3_fix</code>- Model 3 after removing influential points</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">2</span>, <span class="dv">2</span>))
+<span class="kw">plot</span>(lm_fit3_fix, <span class="dt">main=</span><span class="st">"After removing influential"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-69-1.png" width="672"></p>
+<p>Model 3 after removing the influential points seems to be slightly better.</p>
+</div>
+<div id="section-tidying-the-linear-model" class="section level3">
+<h3><span class="header-section-number">7.1.4</span> Tidying the linear model</h3>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder_tidy &lt;-<span class="st"> </span><span class="kw">augment</span>(lm_fit3)
+<span class="co">#glimpse(gapminder_tidy)</span></code></pre></div>
+<p><code>augment()</code> returns a dataframe that contains the data on which model was fit, along with regression model values.</p>
+<p>Leverage - The leverage of an observation in a regression model is defined entirely in terms of the distance of that observation from the mean of the explanatory variable. observations close to the mean of the explanatory variable have low leverage, while observations far from the mean of the explanatory variable have high leverage. Points of high leverage may or may not be influential.</p>
+<p><em>Rank points of high leverage</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm_fit3 <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">augment</span>() <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">arrange</span>(<span class="kw">desc</span>(.hat)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">head</span>()</code></pre></div>
+<pre><code>## # A tibble: 6 x 11
+##   lifeExp income  year region .fitted .se.fit .resid   .hat .sigma .cooksd
+##     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1    79.5  14408  2015 South~    90.0    1.86 -10.5  0.0837   6.42 0.0111 
+## 2    79.4  14095  2014 South~    89.8    1.74 -10.4  0.0737   6.42 0.00936
+## 3    79.3  13353  2013 South~    88.4    1.58  -9.13 0.0607   6.42 0.00579
+## 4    32.6   2139  1900 South~    46.8    1.51 -14.2  0.0554   6.42 0.0127 
+## 5    79.2  12637  2012 South~    87.0    1.44  -7.85 0.0503   6.42 0.00347
+## 6    79.1  12694  2011 South~    87.7    1.41  -8.57 0.0483   6.42 0.00396
+## # ... with 1 more variable: .std.resid &lt;dbl&gt;</code></pre>
+<p>South Asia regions show high leverage.</p>
+<p>Influential - Observations of high leverage may or may not be influential. The influence of an observation depends not only on its leverage, but also on the magnitude of its residual Influential points are likely to have high leverage and deviate from the general relationship between the two variables. We measure influence using Cook’s distance, which incorporates both the leverage and residual of each observation.</p>
+<p><em>Rank influential points</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">lm_fit3 <span class="op">%&gt;%</span>
+<span class="kw">augment</span>() <span class="op">%&gt;%</span>
+<span class="kw">arrange</span>(<span class="kw">desc</span>(.cooksd)) <span class="op">%&gt;%</span>
+<span class="kw">head</span>()</code></pre></div>
+<pre><code>## # A tibble: 6 x 11
+##   lifeExp income  year region .fitted .se.fit .resid   .hat .sigma .cooksd
+##     &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+## 1    71   134864  1979 East ~    95.3    1.28  -24.3 0.0397   6.42  0.0256
+## 2    56.7  40143  2008 Sub-S~    76.7    1.24  -20.0 0.0371   6.42  0.0162
+## 3    71.1 121356  1980 East ~    92.0    1.12  -20.9 0.0303   6.42  0.0142
+## 4    32.6   2139  1900 South~    46.8    1.51  -14.2 0.0554   6.42  0.0127
+## 5    79.5  14408  2015 South~    90.0    1.86  -10.5 0.0837   6.42  0.0111
+## 6    56.3  36788  2007 Sub-S~    75.1    1.10  -18.8 0.0294   6.42  0.0111
+## # ... with 1 more variable: .std.resid &lt;dbl&gt;</code></pre>
+</div>
+<div id="section-nesting-multiple-linear-models" class="section level3">
+<h3><span class="header-section-number">7.1.5</span> Nesting Multiple Linear Models</h3>
+<p>Right now gapminder has 1 row per country-lifeExp pair. We will nest all columns but country so we can model each country individually.</p>
+<div id="section-fitting-multiple-models---population-by-country" class="section level4">
+<h4><span class="header-section-number">7.1.5.1</span> Fitting multiple models - population by country</h4>
+<p><em>Nest all columns besides country</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">country_coefficients &lt;-<span class="st"> </span>gapminder <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">nest</span>(<span class="op">-</span>country) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">mutate</span>(<span class="dt">models =</span> <span class="kw">map</span>(data, <span class="op">~</span><span class="st"> </span><span class="kw">lm</span>(pop <span class="op">~</span><span class="st"> </span>year, <span class="dt">data =</span> .)),
+         <span class="dt">tidied =</span> <span class="kw">map</span>(models, tidy)) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">unnest</span>(tidied, <span class="dt">.drop =</span> <span class="ot">TRUE</span>)
+country_coefficients</code></pre></div>
+<pre><code>## # A tibble: 366 x 6
+##    country     term           estimate  std.error statistic  p.value
+##    &lt;fct&gt;       &lt;chr&gt;             &lt;dbl&gt;      &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+##  1 Afghanistan (Intercept) -208090289. 21485618.      -9.69 4.50e-15
+##  2 Afghanistan year            112813.    10949.      10.3  2.86e-16
+##  3 Albania     (Intercept)  -30067333.  1802678.     -16.7  1.32e-27
+##  4 Albania     year             16435.      919.      17.9  1.64e-29
+##  5 Algeria     (Intercept) -335254051. 27215993.     -12.3  4.50e-20
+##  6 Algeria     year            180462.    13869.      13.0  2.44e-21
+##  7 Andorra     (Intercept)   -2763750.   109307.     -25.3  7.69e-28
+##  8 Andorra     year              1415.       54.9     25.8  3.34e-28
+##  9 Angola      (Intercept) -171173645. 18054046.      -9.48 1.12e-14
+## 10 Angola      year             91987.     9200.      10.00 1.11e-15
+## # ... with 356 more rows</code></pre>
+<p><em>Filter for only the slope terms and highly significant values</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">slope_terms &lt;-<span class="st"> </span>country_coefficients <span class="op">%&gt;%</span>
+<span class="kw">filter</span>(term <span class="op">==</span><span class="st"> "year"</span>)
+<span class="co"># Add p.adjusted column, then filter</span>
+filtered_countries &lt;-<span class="st"> </span>slope_terms <span class="op">%&gt;%</span>
+<span class="kw">mutate</span>(<span class="dt">p.adjusted =</span> <span class="kw">p.adjust</span>(p.value)) <span class="op">%&gt;%</span>
+<span class="kw">filter</span>(p.adjusted <span class="op">&lt;</span><span class="st"> </span><span class="fl">0.05</span>)</code></pre></div>
+<p><em>Sort for the countries population estimates in increasing order</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">filtered_countries <span class="op">%&gt;%</span>
+<span class="kw">arrange</span>(estimate)</code></pre></div>
+<pre><code>## # A tibble: 182 x 7
+##    country           term  estimate std.error statistic  p.value p.adjusted
+##    &lt;fct&gt;             &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;
+##  1 Dominica          year     -56.9     15.5      -3.68 6.39e- 4   1.28e- 3
+##  2 Antigua and Barb~ year     277.      19.0      14.6  4.39e-24   4.31e-22
+##  3 Greenland         year     289.      18.2      15.9  1.41e-24   1.43e-22
+##  4 Aruba             year     353.      24.3      14.5  1.66e-22   1.38e-20
+##  5 Grenada           year     422.       9.16     46.0  8.42e-59   1.43e-56
+##  6 Kiribati          year     433.      32.2      13.5  3.93e-22   3.19e-20
+##  7 Seychelles        year     449.      24.8      18.1  8.15e-30   1.02e-27
+##  8 Tonga             year     537.      25.6      21.0  4.16e-34   5.45e-32
+##  9 Micronesia, Fed.~ year     538.      38.2      14.1  3.15e-23   2.94e-21
+## 10 Sao Tome and Pri~ year     735.      56.9      12.9  3.64e-21   2.62e-19
+## # ... with 172 more rows</code></pre>
+<p>Dominica seems to the least populated.</p>
+<p><em>Sort for the countries population estimates in decreasing order</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">filtered_countries <span class="op">%&gt;%</span>
+<span class="kw">arrange</span>(<span class="kw">desc</span>(estimate))</code></pre></div>
+<pre><code>## # A tibble: 182 x 7
+##    country       term  estimate std.error statistic  p.value p.adjusted
+##    &lt;fct&gt;         &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;      &lt;dbl&gt;
+##  1 China         year  5722807.   391532.      14.6 3.58e-24   3.58e-22
+##  2 India         year  5596178.   424442.      13.2 1.19e-21   9.02e-20
+##  3 United States year  1645937.    44101.      37.3 6.14e-52   1.01e-49
+##  4 Indonesia     year  1233511.    80152.      15.4 1.74e-25   1.82e-23
+##  5 Brazil        year  1091769.    65355.      16.7 1.20e-27   1.38e-25
+##  6 Pakistan      year   808322.    71156.      11.4 2.76e-18   1.33e-16
+##  7 Nigeria       year   743369.    63991.      11.6 9.07e-19   4.81e-17
+##  8 Bangladesh    year   697208.    57900.      12.0 1.46e-19   8.85e-18
+##  9 Russia        year   669973.    16725.      40.1 3.03e-54   5.06e-52
+## 10 Mexico        year   617832.    43312.      14.3 1.46e-23   1.40e-21
+## # ... with 172 more rows</code></pre>
+<p>China and India top the list, as expected.</p>
+</div>
+</div>
+</div>
+<div id="section-cluster-analysis" class="section level2">
+<h2><span class="header-section-number">7.2</span> Cluster Analysis</h2>
+<div id="section-prepare-data-for-cluster-analysis" class="section level3">
+<h3><span class="header-section-number">7.2.1</span> Prepare data for Cluster Analysis</h3>
+<ol style="list-style-type: decimal">
+<li>Dimensionality Reduction with PCA (Principal Component Analysis) Identify the dimensions that explains 75% of the variation in data. This can be done by creating PCA model and observe the diagnostic results.</li>
+</ol>
+<p><em>Standard deviation is used to scale the data and column means used to center the data.</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Perform scaled PCA: pr.out</span>
+pr.out &lt;-<span class="st"> </span><span class="kw">prcomp</span>(gapminder[,<span class="dv">2</span><span class="op">:</span><span class="dv">5</span>], <span class="dt">scale=</span><span class="ot">TRUE</span>, <span class="dt">center=</span><span class="ot">TRUE</span>)</code></pre></div>
+<p><em>Summary stats of PCA model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">summary</span>(pr.out)</code></pre></div>
+<pre><code>## Importance of components:
+##                          PC1    PC2    PC3     PC4
+## Standard deviation     1.448 1.0039 0.8455 0.42602
+## Proportion of Variance 0.524 0.2520 0.1787 0.04537
+## Cumulative Proportion  0.524 0.7759 0.9546 1.00000</code></pre>
+<p>Minimum number of principal components required to explain atleast 75% of cumulative variance in the dataset is 2. PC1 &amp; PC2 cumulative proportion is 0.7759.</p>
+<p><em>Variability of each principal component: pr.var</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pr.var &lt;-<span class="st"> </span>pr.out<span class="op">$</span>sdev<span class="op">^</span><span class="dv">2</span></code></pre></div>
+<p><em>Variance explained by each principal component: pve</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pve &lt;-<span class="st"> </span>pr.var <span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(pr.var)</code></pre></div>
+<p><em>Plot variance explained for each principal component</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(pve, <span class="dt">main=</span><span class="st">"variance explained by PC"</span>, <span class="dt">xlab =</span> <span class="st">"Principal Component"</span>,
+     <span class="dt">ylab =</span> <span class="st">"Proportion of Variance Explained"</span>,
+     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">type =</span> <span class="st">"b"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-81-1.png" width="672"></p>
+<p><em>Plot cumulative proportion of variance explained</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="kw">cumsum</span>(pve), <span class="dt">main=</span><span class="st">"cumulative proportion of variance"</span>, <span class="dt">xlab =</span> <span class="st">"Principal Component"</span>,
+     <span class="dt">ylab =</span> <span class="st">"Cumulative Proportion of Variance Explained"</span>,
+     <span class="dt">ylim =</span> <span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">1</span>), <span class="dt">type =</span> <span class="st">"b"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-82-1.png" width="672"></p>
+<p>Above plot shows 75% of cumulative variance is explained by 2 principal components.</p>
+<p><em>Creating a Biplot for the PCA model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">biplot</span>(pr.out)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-83-1.png" width="672"></p>
+<p>year and lifeExp are in the same direction, which shows the 2 variables are highly correlated. Income is moderate correlation with year &amp; life Exp. Let’s use lifeExp and Income to create a 2 dimensional data frame.</p>
+<ol start="2" style="list-style-type: decimal">
+<li>Now create a 2-dimensional data frame from gapminder from few countries - US, China, India, Japan, France, UK</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sel_country &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">"United States"</span>, <span class="st">"China"</span>, <span class="st">"India"</span>, <span class="st">"Japan"</span>, <span class="st">"France"</span>, <span class="st">"United Kingdom"</span>)
+gapminder_sel &lt;-<span class="st"> </span>gapminder <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">filter</span>(country <span class="op">%in%</span><span class="st"> </span>sel_country) <span class="op">%&gt;%</span>
+<span class="st">  </span><span class="kw">select</span>(<span class="st">"lifeExp"</span>,<span class="st">"income"</span>, <span class="st">"year"</span>, <span class="st">"country"</span>) </code></pre></div>
+<p><em>glimpse the structure of the data frame <code>gapminder_sel</code></em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">str</span>(gapminder_sel)
+<span class="kw">glimpse</span>(gapminder_sel)</code></pre></div>
+<ol start="3" style="list-style-type: decimal">
+<li>Scale the first 2 columns of the dataset before performing cluster analysis - lifeExp &amp; income</li>
+</ol>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gapminder_sel_scaled &lt;-<span class="st"> </span><span class="kw">scale</span>(gapminder_sel[,<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>])</code></pre></div>
+</div>
+<div id="section-k-means-clustering" class="section level3">
+<h3><span class="header-section-number">7.2.2</span> K-means clustering</h3>
+<p>This section describes how to perform data analysis using k-means clustering method.</p>
+<p>Various methods can be used to determine the number of clusters. We will be discussing Elbow and Silhouette methods here.</p>
+<p><em>Finding k (number of clusters) using Elbow method</em></p>
+<p>Use map_dbl to run many models with varying value of k (centers)</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tot_withinss &lt;-<span class="st"> </span><span class="kw">map_dbl</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,  <span class="cf">function</span>(k){
+  model &lt;-<span class="st"> </span><span class="kw">kmeans</span>(<span class="dt">x =</span> gapminder_sel_scaled, <span class="dt">centers =</span> k, <span class="dt">nstart =</span> <span class="dv">20</span>)
+  model<span class="op">$</span>tot.withinss
+})</code></pre></div>
+<p><em>Generate a data frame containing both k and tot_withinss</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">elbow_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">k =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,
+  <span class="dt">tot_withinss =</span> tot_withinss
+)</code></pre></div>
+<p><em>Plot the elbow plot</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(elbow_df, <span class="kw">aes</span>(<span class="dt">x =</span> k, <span class="dt">y =</span> tot_withinss)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">1</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"elbow plot"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-89-1.png" width="672"></p>
+<p>Number of clusters determined using Elbow method is 2 (where we notice sharp drop in tot_withinssarp)</p>
+<p><em>Build a kmeans model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">model_km2 &lt;-<span class="st"> </span><span class="kw">kmeans</span>(gapminder_sel_scaled, <span class="dt">centers=</span><span class="dv">2</span>, <span class="dt">nstart =</span> <span class="dv">20</span>)</code></pre></div>
+<p><em>Extract the cluster assignment vector from the kmeans model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">clust_km2 &lt;-<span class="st"> </span>model_km2<span class="op">$</span>cluster</code></pre></div>
+<p><em>Create a new data frame appending the cluster assignment</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_km2 &lt;-<span class="st"> </span><span class="kw">mutate</span>(gapminder_sel, <span class="dt">cluster=</span>clust_km2)</code></pre></div>
+<p><em>Visualize the cluster</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">fviz_cluster</span>(model_km2, <span class="dt">data =</span> gapminder_sel_scaled)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-93-1.png" width="672"></p>
+<p>This visual shoows which income &amp; life expectancy data points belong to which cluster.</p>
+<p><em>Visualizing the lifeExp-income cluster distribution by country</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gap_km2, <span class="kw">aes</span>(<span class="dt">x =</span> income, <span class="dt">y =</span> lifeExp, <span class="dt">color =</span> <span class="kw">factor</span>(cluster))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(country <span class="op">~</span><span class="st"> </span>.) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"lifeExp income cluster by country"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-94-1.png" width="672"></p>
+<p>Shows the range pf income-lifeExp distribution for each vountry. Notice no datapoint in cluster 1 for India.</p>
+<p><em>Count the cluster assignments</em></p>
+<pre><code>## # A tibble: 2 x 2
+##   cluster     n
+##     &lt;int&gt; &lt;int&gt;
+## 1       1   253
+## 2       2   233</code></pre>
+<p><em>Calculate the mean for each cluster, country</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_km2 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(cluster, country) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="kw">mean</span>(lifeExp), <span class="kw">mean</span>(income), <span class="kw">n</span>())</code></pre></div>
+<pre><code>## # A tibble: 11 x 5
+## # Groups:   cluster [2]
+##    cluster country        `mean(lifeExp)` `mean(income)` `n()`
+##      &lt;int&gt; &lt;fct&gt;                    &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+##  1       1 China                     75.7          9470.    11
+##  2       1 France                    75.9         25811.    60
+##  3       1 Japan                     78.5         25826.    50
+##  4       1 United Kingdom            74.6         23463.    66
+##  5       1 United States             73.8         32709.    66
+##  6       2 China                     53.4          1402.    70
+##  7       2 France                    50.5          4858.    21
+##  8       2 India                     47.9          1822.    81
+##  9       2 Japan                     53.0          3042.    31
+## 10       2 United Kingdom            46.3          6135.    15
+## 11       2 United States             45.3          5301.    15</code></pre>
+<p>This shows the average values for lifeExp-income for each country in that cluster.</p>
+<p><em>Silhouette Analysis - finding k (number of clusters) using Silhouette width method</em></p>
+<p><em>Determine number of clusters</em> Use map_dbl to run many models with varying value of k</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sil_width &lt;-<span class="st"> </span><span class="kw">map_dbl</span>(<span class="dv">2</span><span class="op">:</span><span class="dv">10</span>,  <span class="cf">function</span>(k){
+  model &lt;-<span class="st"> </span><span class="kw">pam</span>(<span class="dt">x =</span> gapminder_sel_scaled, <span class="dt">k =</span> k)
+  model<span class="op">$</span>silinfo<span class="op">$</span>avg.width
+})</code></pre></div>
+<p><em>Generate a data frame containing both k and sil_width</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sil_df &lt;-<span class="st"> </span><span class="kw">data.frame</span>(
+  <span class="dt">k =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">10</span>,
+  <span class="dt">sil_width =</span> sil_width
+)</code></pre></div>
+<p><em>Plot the relationship between k and sil_width</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(sil_df, <span class="kw">aes</span>(<span class="dt">x =</span> k, <span class="dt">y =</span> sil_width)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_x_continuous</span>(<span class="dt">breaks =</span> <span class="dv">2</span><span class="op">:</span><span class="dv">10</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"k and sl_width"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-99-1.png" width="672"></p>
+<p>k=3 has the highest average sil_width</p>
+<p><em>Generate a k-means model using the pam() function with a k = 3</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pam_k3 &lt;-<span class="st"> </span><span class="kw">pam</span>(gapminder_sel_scaled, <span class="dt">k =</span> <span class="dv">3</span>)</code></pre></div>
+<p><em>Plot the silhouette visual for the pam_k2 model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(<span class="kw">silhouette</span>(pam_k3))</code></pre></div>
+<p>Note that we have suppressed this plot.</p>
+<p><em>Extract the cluster assignment vector from the kmeans model</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">pam_km3 &lt;-<span class="st"> </span>pam_k3<span class="op">$</span>cluster</code></pre></div>
+<p><em>Create a new data frame appending the cluster assignment</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_pam_km3 &lt;-<span class="st"> </span><span class="kw">mutate</span>(gapminder_sel, <span class="dt">cluster=</span>pam_km3)</code></pre></div>
+<p><em>Plot the lifeExp and income and color them using their cluster</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gap_pam_km3, <span class="kw">aes</span>(<span class="dt">x =</span> income, <span class="dt">y =</span> lifeExp, <span class="dt">color =</span> <span class="kw">factor</span>(cluster))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(country <span class="op">~</span><span class="st"> </span>.) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"lifeExp income cluster by country"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-104-1.png" width="672"></p>
+<p>This visual also shows no data for india in cluster 3.</p>
+<p><em>Count the cluster assignments</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">count</span>(gap_pam_km3, cluster)</code></pre></div>
+<pre><code>## # A tibble: 3 x 2
+##   cluster     n
+##     &lt;int&gt; &lt;int&gt;
+## 1       1   132
+## 2       2   185
+## 3       3   169</code></pre>
+<p><em>Calculate the mean for each category</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_pam_km3 <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(cluster, country) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="kw">mean</span>(lifeExp), <span class="kw">mean</span>(income), <span class="kw">n</span>())</code></pre></div>
+<pre><code>## # A tibble: 16 x 5
+## # Groups:   cluster [3]
+##    cluster country        `mean(lifeExp)` `mean(income)` `n()`
+##      &lt;int&gt; &lt;fct&gt;                    &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+##  1       1 China                     38.4           841.    32
+##  2       1 France                    42.7          3104.    14
+##  3       1 India                     38.9          1103.    48
+##  4       1 Japan                     38.8          1648.    15
+##  5       1 United Kingdom            42.1          5068     11
+##  6       1 United States             41.7          4073.    12
+##  7       2 China                     68.2          3580.    49
+##  8       2 France                    69.7         12502.    24
+##  9       2 India                     60.9          2867.    33
+## 10       2 Japan                     69.4          8735.    29
+## 11       2 United Kingdom            69.4         14236.    32
+## 12       2 United States             67.7         16354.    18
+## 13       3 France                    77.8         30400.    43
+## 14       3 Japan                     80.3         29935.    37
+## 15       3 United Kingdom            77.2         29717.    38
+## 16       3 United States             75.1         37158.    51</code></pre>
+<div id="section-compare-k-means---elbow-and-silhouette-cluster-methods" class="section level4">
+<h4><span class="header-section-number">7.2.2.1</span> Compare K-means - Elbow and Silhouette cluster Methods</h4>
+<p>Let’s compare the output from K-means elbow and silhouette clustering methods.</p>
+<p><em>K-means - Elbow Vs Silhouette</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Compare to k-means elbow and silhouette</span>
+<span class="kw">table</span>(gap_km2<span class="op">$</span>cluster, gap_pam_km3<span class="op">$</span>cluster)</code></pre></div>
+<pre><code>##    
+##       1   2   3
+##   1   0  84 169
+##   2 132 101   0</code></pre>
+<p>Both elbow and silhouette have clustered similar way and not seeing much variation, except for silhouette method was run for 3 clusters.</p>
+</div>
+</div>
+<div id="section-hierarchical-clustering" class="section level3">
+<h3><span class="header-section-number">7.2.3</span> Hierarchical clustering</h3>
+<p>This section describes how to perform data analysis using hierarchical clustering method.</p>
+<p><em>Calculate euclidean distance</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dist_gap &lt;-<span class="st"> </span><span class="kw">dist</span>(gapminder_sel_scaled)</code></pre></div>
+<p><em>Perform the hierarchical clustering using the complete, single, average linkage methods</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">hc_gap_complete &lt;-<span class="st"> </span><span class="kw">hclust</span>(dist_gap, <span class="dt">method=</span><span class="st">"complete"</span>)
+hc_gap_single &lt;-<span class="st"> </span><span class="kw">hclust</span>(dist_gap, <span class="dt">method=</span><span class="st">"single"</span>)
+hc_gap_average &lt;-<span class="st"> </span><span class="kw">hclust</span>(dist_gap, <span class="dt">method=</span><span class="st">"average"</span>)</code></pre></div>
+<p><em>Plot the 3 dendograms side by side</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">par</span>(<span class="dt">mfrow =</span> <span class="kw">c</span>(<span class="dv">1</span>,<span class="dv">3</span>))
+<span class="kw">plot</span>(hc_gap_complete, <span class="dt">main =</span> <span class="st">'Complete Linkage'</span>)
+<span class="kw">plot</span>(hc_gap_single, <span class="dt">main =</span> <span class="st">'Single Linkage'</span>)
+<span class="kw">plot</span>(hc_gap_average, <span class="dt">main =</span> <span class="st">'Average Linkage'</span>)</code></pre></div>
+<p><em>Create a dendrogram object from the hclust variable</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dend_gap_complete &lt;-<span class="st"> </span><span class="kw">as.dendrogram</span>(hc_gap_complete)</code></pre></div>
+<p><em>Plot the dendrogram</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(dend_gap_complete)</code></pre></div>
+<p>Note that we have suppressed this plot.</p>
+<p><em>Color branches by cluster formed from the cut at a height of 2 &amp; plot</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">dend_gap_height &lt;-<span class="st"> </span><span class="kw">color_branches</span>(dend_gap_complete, <span class="dt">h =</span> <span class="dv">2</span>)</code></pre></div>
+<p><em>Plot the dendrogram with clusters colored below height 2</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot</span>(dend_gap_height, <span class="dt">main=</span><span class="st">"dendogram plot height=2"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-114-1.png" width="672"></p>
+<p>This has created 5 clusters based on height=2</p>
+<p><em>Cutree for height = 2</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">clusters_gap_height &lt;-<span class="st"> </span><span class="kw">cutree</span>(hc_gap_complete, <span class="dt">h=</span><span class="dv">2</span>)</code></pre></div>
+<p><em>Create a new data frame storing these results</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_height_complete &lt;-<span class="st"> </span><span class="kw">mutate</span>(gapminder_sel, <span class="dt">cluster =</span> clusters_gap_height)</code></pre></div>
+<p><em>Count the cluster assignments</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">count</span>(gap_height_complete, cluster)</code></pre></div>
+<pre><code>## # A tibble: 5 x 2
+##   cluster     n
+##     &lt;int&gt; &lt;int&gt;
+## 1       1    93
+## 2       2    88
+## 3       3    85
+## 4       4   198
+## 5       5    22</code></pre>
+<p><em>Calculate the mean for each category</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_height_complete <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(cluster, country) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="kw">mean</span>(lifeExp),<span class="kw">mean</span>(income), <span class="kw">n</span>())</code></pre></div>
+<pre><code>## # A tibble: 22 x 5
+## # Groups:   cluster [5]
+##    cluster country        `mean(lifeExp)` `mean(income)` `n()`
+##      &lt;int&gt; &lt;fct&gt;                    &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+##  1       1 China                     34.6           869.    24
+##  2       1 France                    40.0          2522.    10
+##  3       1 India                     32.6          1056.    31
+##  4       1 Japan                     37.4          1403.    13
+##  5       1 United Kingdom            40.4          4044.     6
+##  6       1 United States             39.4          3124.     9
+##  7       2 China                     56.8           825.    21
+##  8       2 France                    50.9          5012.     5
+##  9       2 India                     55.6          1755.    41
+## 10       2 Japan                     57.1          2990      6
+## # ... with 12 more rows</code></pre>
+<p><em>Plot the positions of the lifeExp-Income and color them using their cluster</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gap_height_complete, <span class="kw">aes</span>(<span class="dt">x =</span> income, <span class="dt">y =</span> lifeExp, <span class="dt">color =</span> <span class="kw">factor</span>(cluster))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(country <span class="op">~</span><span class="st"> </span>.) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"lifeExp-Income cluster by country"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-119-1.png" width="672"></p>
+<p>As expected, we can see 5 clusters were created for height=2</p>
+<p><em>Cutree based on clusters instead of height</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">clusters_gap6_complete &lt;-<span class="st"> </span><span class="kw">cutree</span>(hc_gap_complete, <span class="dt">k=</span><span class="dv">6</span>)</code></pre></div>
+<p><em>Create a new data frame storing these results</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_complete &lt;-<span class="st"> </span><span class="kw">mutate</span>(gapminder_sel, <span class="dt">cluster =</span> clusters_gap6_complete)</code></pre></div>
+<p><em>Count the cluster assignments</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">count</span>(gap_complete, cluster)</code></pre></div>
+<pre><code>## # A tibble: 6 x 2
+##   cluster     n
+##     &lt;int&gt; &lt;int&gt;
+## 1       1    93
+## 2       2    88
+## 3       3    85
+## 4       4   104
+## 5       5    94
+## 6       6    22</code></pre>
+<p><em>Calculate the mean for each category</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">gap_complete <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">group_by</span>(cluster, country) <span class="op">%&gt;%</span><span class="st"> </span>
+<span class="st">  </span><span class="kw">summarise</span>(<span class="kw">mean</span>(lifeExp), <span class="kw">mean</span>(income),<span class="kw">n</span>())</code></pre></div>
+<pre><code>## # A tibble: 26 x 5
+## # Groups:   cluster [6]
+##    cluster country        `mean(lifeExp)` `mean(income)` `n()`
+##      &lt;int&gt; &lt;fct&gt;                    &lt;dbl&gt;          &lt;dbl&gt; &lt;int&gt;
+##  1       1 China                     34.6           869.    24
+##  2       1 France                    40.0          2522.    10
+##  3       1 India                     32.6          1056.    31
+##  4       1 Japan                     37.4          1403.    13
+##  5       1 United Kingdom            40.4          4044.     6
+##  6       1 United States             39.4          3124.     9
+##  7       2 China                     56.8           825.    21
+##  8       2 France                    50.9          5012.     5
+##  9       2 India                     55.6          1755.    41
+## 10       2 Japan                     57.1          2990      6
+## # ... with 16 more rows</code></pre>
+<p><em>Plot the positions of the lifeExp-Income and color them using their cluster</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(gap_complete, <span class="kw">aes</span>(<span class="dt">x =</span> income, <span class="dt">y =</span> lifeExp, <span class="dt">color =</span> <span class="kw">factor</span>(cluster))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_line</span>(<span class="dt">size=</span><span class="dv">1</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">facet_wrap</span>(country <span class="op">~</span><span class="st"> </span>.) <span class="op">+</span>
+<span class="st">  </span><span class="kw">ggtitle</span>(<span class="st">"lifeExp income cluster by country"</span>)</code></pre></div>
+<p><img src="./Exploratory Data Analysis - Gapminder Data_Complete_files/unnamed-chunk-124-1.png" width="672"></p>
+<p>Visual shows distribution by cluster assignments</p>
+<div id="section-compare-hierarchical---height-vs-cluster-method" class="section level4">
+<h4><span class="header-section-number">7.2.3.1</span> Compare Hierarchical - Height Vs Cluster Method</h4>
+<p>Let’s compare the output from hierachical height and cluster clustering methods.</p>
+<p><em>Compare to Hierarchical Cutree based on Height and # of Clusters</em></p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">table</span>(gap_height_complete<span class="op">$</span>cluster, gap_complete<span class="op">$</span>cluster)</code></pre></div>
+<pre><code>##    
+##       1   2   3   4   5   6
+##   1  93   0   0   0   0   0
+##   2   0  88   0   0   0   0
+##   3   0   0  85   0   0   0
+##   4   0   0   0 104  94   0
+##   5   0   0   0   0   0  22</code></pre>
+<p>Above table shows both height and # clusters have clustered similar way and not seeing much variation. Rows contain the cutree based on height and columns shows the cutree based on number of clusters.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="section-conclusion" class="section level1">
+<h1><span class="header-section-number">8</span> Conclusion</h1>
+<p>Overall this analysis shows Life Expectancy have improved dramatically in every country. They remain clearly associated with the income. Life Expectancy is directly correlated with income but shows best-fit with year and region. Population shows steady increase in all regions over the years.</p>
+<p>From technical standpoint, we explored the following in R:</p>
+<ol style="list-style-type: decimal">
+<li>Installing packages &amp; Loading libraries</li>
+<li>Reading CSV dataset in R</li>
+<li>Exploring raw data commands</li>
+<li>Visualizing raw data - use of histogram, boxplots, density, correlation plots</li>
+<li>Using baseR plot, ggplot2, interactive plots using Shiny, custom backgrounds and axis names etc</li>
+<li>Linear Regression Models - simple, interactions</li>
+<li>Clustering - K-means, hierarchical</li>
+<li>Dimensionality Reduction using PCA</li>
+<li>Use of R Markdown - code chunks, in-line, html, themes, toc, fonts, titles etc</li>
+<li>Use of github for publishing code &amp; html output</li>
+</ol>
+</div>
+<div id="section-references" class="section level1">
+<h1><span class="header-section-number">9</span> References</h1>
+<p>References for performing this exercise includes:</p>
+<ul>
+<li><a href="https://www.datacamp.com/home">DataCamp</a></li>
+<li><a href="https://r4ds.had.co.nz/">r4ds</a></li>
+<li><a href="https://bookdown.org/rdpeng/exdata">bookdown</a></li>
+<li><a href="https://cran.r-project.org/">cran.r-project</a></li>
+</ul>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "mathjax-local/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+
+</div>
+  </div>
+
+
+
+</body></html>
