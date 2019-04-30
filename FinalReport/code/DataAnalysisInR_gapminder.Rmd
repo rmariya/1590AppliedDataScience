@@ -1,0 +1,1236 @@
+---
+title: "Exploratory Data Analysis - Gapminder Data"
+author: "Rose Mariyappan"
+date: "April 28, 2019"
+output: 
+  html_document: 
+    toc: true
+    number_sections: true
+    theme: flatly
+    highlight: haddock  
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+# Epicycle of Analysis
+
+This document showcases the Epicycle of Analysis in R, as part of I590 Applied Data Science curriculum. We will be using gapminder dataset and perform exploratory analyses using different types of visualisations. We try to identify associations between different variables, more particularly Life Expectancy and Income in different regions. 
+
+We will take step by step approach to perform this analysis as outlined below.
+
+* Stating the question
+* Importing dataset   
+* Exploring raw data
+* Cleaning data
+* Data wrangling
+* Building statistical models
+* Visualizing
+* Interpreting the results
+* Communicating the results
+
+For educational purposes, we will make the code visible. 
+
+
+# Introduction to gapminder dataset
+
+This dataset consists of following fields:
+
+* Country - which country the observation is for
+* Year - which year the measures are related to
+* LifeExp - life expectancy at birth
+* population - population of the country
+* Income - income
+* Region - which region the country is from
+
+# Stating the Question
+
+First step after looking at your dataset if to formulate the right question. This helps guide in the exploratory data analysis process to limit the number of paths can be taken with a sizeable data. 
+
+The questions we would like to get answers from gapminder dataset are the following:
+
+1. How did Life Expectancy and its distribution among countries evolve overall? 
+2. How does Life Expectancy compare between different regions and countries?
+3. How is Life Expectancy influenced by other variables such as income? 
+
+# Install Packages
+
+```{r eval = FALSE, message=FALSE, warning=FALSE}
+install.packages("dplyr")
+install.packages("tidyr")
+install.packages("tidyverse")
+install.packages("ggplot2")
+install.packages("readr")    # read_csv
+install.packages("psych")    # describe
+install.packages("broom")
+install.packages("Hmisc")
+install.packages("purrr")
+install.packages("rpart.plot") 
+install.packages("shiny")      # interactive visualization
+install.packages("lmtest")
+install.packages("cluster")    # clustering algorithms
+install.packages("factoextra") # clustering algorithms & visualization
+```
+# Load the Packages to working environment
+
+```{r message=FALSE, warning=FALSE}
+library("dplyr")
+library("tidyr")
+library("tidyverse")
+library("ggplot2")
+library("readr")
+library("psych")
+library("broom")
+library("Hmisc")
+library("purrr")
+library("dendextend")
+library("rpart")
+library("rpart.plot")
+library("shiny")
+library("lmtest")
+library("cluster")
+library("factoextra")
+```
+
+# Import gapminder dataset
+
+The next step in the EDA is to read in the data. Data can come in messy, therefore examine the data and clean, if necessary.
+
+*Import gapminder.csv file to `gapminder` data frame*
+
+```{r message=FALSE, warning=FALSE}
+gapminder <- read_csv("C:/Users/User/Desktop/MyDocuments/MSDS/Courses/AppliedDataScience/FinalReport/data/gapminder.csv")
+```
+
+## Examine structure of dataset
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+class(gapminder)
+```
+
+*Class of the gapminder data frame is `r class(gapminder)`*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+dim(gapminder)
+```
+
+*Dimension of gapminder data frame is `r dim(gapminder)`*
+
+Number of observations = 41284
+Number of variables = 6
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+names(gapminder)
+```
+
+Variables in gapminder data frame - `r names(gapminder)`
+
+*Examine the structure of gapminder data frame using `str`*
+
+```{r eval= FALSE, message=FALSE, warning=FALSE}
+str(gapminder)
+```
+
+*Convert character variables country and regions as factors and store in gapminder data frame*
+
+```{r message=FALSE, warning=FALSE}
+gapminder <- gapminder %>% 
+  mutate(country = as.factor(country), region = as.factor(region))
+```
+
+*`glimpse` is another great way to look at the data frame*
+
+```{r eval= FALSE, message=FALSE, warning=FALSE}
+glimpse(gapminder)
+```
+
+*Summary statistics of the data frame*
+
+```{r message=FALSE, warning=FALSE}
+summary(gapminder)
+```
+
+Summary shows we have missing values in the gapminder dataset for pop & income
+
+*Dealing with missing values - removing missing values for this analysis*
+
+```{r message=FALSE, warning=FALSE}
+gapminder<- gapminder %>% drop_na()
+```
+
+*View summary again to ensure there are no NAs*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+summary(gapminder)
+```
+
+*`describe` gives information about full range of data and adds other important statistics to the output. skew represents how close the median is to the mean.*
+
+```{r eval= FALSE, message=FALSE, warning=FALSE}
+psych::describe(gapminder)
+```
+
+## Look at the data
+
+*View the first 15 rows using `head`*
+
+```{r eval= FALSE, message=FALSE, warning=FALSE}
+head(gapminder, n = 15)
+```
+
+*View the last 15 rows using `tail`*
+
+```{r eval= FALSE, message=FALSE, warning=FALSE}
+tail(gapminder, n = 15)
+```
+
+## Visualizing raw data
+
+*plot histogram of population*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(pop)) +
+  geom_histogram() +
+  ggtitle("histogram of population")
+```
+
+This data is highly skewed, with extremely long tails. This makes sense since some countries have small population while some contain significant amount of world's population.
+
+*Transform the skewed pop variable using log function to see its distribution*
+
+```{r message=FALSE, warning=FALSE}
+gapminder %>%
+  ggplot(aes(x = log(pop))) +
+  geom_density(alpha = 0.3) +
+  ggtitle("density plot for population")
+```
+
+The distribution looks much normally distributed after log tranformation.
+
+*Plot histogram of lifeExp*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(lifeExp)) +
+  geom_histogram() +
+  ggtitle("histogram of lifeExp")
+```
+
+LifeExp count seems maximum around 70's.
+
+*Histogram of LifeExp Using Shiny*
+
+```{r message=FALSE, warning=FALSE}
+
+inputPanel(
+  selectInput("n_breaks", label = "Number of bins:",
+              choices = c(10, 20, 35, 50), selected = 20),
+
+  sliderInput("bw_adjust", label = "Bandwidth adjustment:",
+              min = 0.2, max = 2, value = 1, step = 0.2)
+)
+
+renderPlot({
+  hist(gapminder$lifeExp, probability = TRUE, breaks = as.numeric(input$n_breaks),
+       xlab = "Life Expectancy (in Years)", main = "Histogram of Life Expectancy using Shiny")
+  
+  dens <- density(gapminder$lifeExp, adjust = input$bw_adjust)
+  lines(dens, col = "blue")
+})
+```
+
+
+*Plot histogram of income*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(income)) +
+  geom_histogram() +
+  ggtitle("histogram of income")
+```
+
+Income is also unevenly distributed. 
+
+*Boxplot of lifeExp in various regions*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x = region, y = lifeExp)) +
+  geom_boxplot() +
+  ggtitle("boxplot of lifeExp in various regions")
+```
+
+That explains since different countries can have different range of income.
+
+*overlaid density plots of lifeExp in various regions*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x = lifeExp, fill = region)) +
+  geom_density(alpha=0.3) +
+  ggtitle("density plot of lifeExp in regions")
+```
+
+## Identify trends
+
+*Start looking for obvious patterns*
+
+```{r message=FALSE, warning=FALSE}
+pairs(gapminder[, 2:5])
+```
+
+We can see some obvious trends. All variables are increasing over time. lifeExp goes up as income goes up. 
+
+*Let's check the correlation between the variables.*
+
+```{r message=FALSE, warning=FALSE}
+cor(gapminder[, 2:5])
+```
+
+*Here's another way to visualize the correlation between variables*
+
+```{r message=FALSE, warning=FALSE}
+CorMatrix <- broom::tidy(cor(gapminder[, 2:5])) %>%
+  rename(Var1 = ".rownames") %>%
+  gather(Var2, Cor, -Var1)
+```  
+
+```{r message=FALSE, warning=FALSE}
+CorMatrix
+```
+
+```{r message=FALSE, warning=FALSE}
+ggplot(CorMatrix, aes(Var1, Var2, fill = Cor)) +
+  geom_tile() +
+  ggtitle("correlation between variables")
+```
+
+strongest correlation is between lifeExp and year. lifeExp and income is moderately correlated.
+
+*Let's visualize the trend between income and lifeExp using ggplot.*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(income, lifeExp)) + 
+  geom_jitter() +
+  ggtitle("trend between income and lifeExp")
+```
+
+*What happens if we color these by year.*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(income, lifeExp, col=year)) + 
+  geom_jitter() +
+  ggtitle("trend between incom, lifeExp by year")
+```
+
+Shows increasing trend in lifeExp by years.
+
+*Let's look at this by region and also taking log of income values.*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(log(income), lifeExp, col=year)) + 
+  geom_jitter() +
+  facet_wrap(~ region) +
+  ggtitle("trend between log(income), lifeExp by year")
+```
+
+It looks like Middle East & North Africa, Sub-Saharn Africa regions have lower average life expectancy than others.
+
+*median lifeExp by region*
+
+```{r message=FALSE, warning=FALSE}
+aggregate(lifeExp ~ region, gapminder, median)
+```
+
+*median of lifeExp by region in the year 2007*
+
+```{r message=FALSE, warning=FALSE}
+gapminder %>%
+    filter(year == 2007) %>%
+    group_by(region) %>%
+    summarise(lifeExp = median(lifeExp))
+```
+
+*Visualize the lifeExp plot by region that also highlights the outliers in `hotpink`*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x = region, y = lifeExp)) +
+  geom_boxplot(outlier.colour = "hotpink") +
+  geom_jitter(position = position_jitter(width = 0.1, height = 0), alpha = 1/4) +
+  ggtitle("lifeExp plot by region with outliers")
+```
+
+This shows high average lifeExp for Europe and Central Asia regions. 
+
+*lifeExp over the years by region*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x = year, y = lifeExp, group = country, color = country)) +
+  geom_line(lwd = 1, show.legend = FALSE) + facet_wrap(~ region) +
+  theme_bw() + theme(strip.text = element_text(size = rel(1.1))) +
+  ggtitle("lifeExp over the years by region")
+```
+
+lifeExp has dramatically increased over the years in all regions
+
+*Let's look at population over the years by region.*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x=year, y=pop, color=region)) + 
+  geom_smooth(se=FALSE) +
+  ggtitle("population over the years by region")
+```
+
+All regions show steady population increase over the years.
+
+*Below shows steady population (mean values) increase over the years in all regions*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x=year, y=log(pop), col=region, group=region, fill = region)) +
+stat_summary(fun.y = mean, geom="line", size=1.1) +
+stat_summary(fun.data=mean_sdl, fun.args=list(mult=1), geom="ribbon", col=NA, alpha=0.1) +
+  ggtitle("mean population over the years by region")
+```
+
+# Building Statistical Models
+
+Perform statistical tests on the dataset using different methods, diagnose the models and interpret findings. 
+
+## Linear Regression
+
+This section describes how to perform data analysis using linear regression models.
+
+### Correlation Regression
+
+*Perform correlation test to see if the correlations are statistically significant*
+
+```{r message=FALSE, warning=FALSE}
+cor.test(gapminder$lifeExp, gapminder$income)
+```
+
+Yes, the p-value is less than 0.05 and therefore statistically significant.
+
+*Perform ANOVA test to check if the correlations are different in other regions.
+Modeling lifeExp as a function of region.*
+
+```{r message=FALSE, warning=FALSE}
+aov(lifeExp ~ region, data = gapminder)
+```
+
+lifeExp is the dependent variable, region as independent variable
+
+*Let's check the correlation between lifeExp for all regions.*
+
+```{r message=FALSE, warning=FALSE}
+anova(aov(lifeExp ~ region, data = gapminder))
+```
+
+Looks like all regions does have a significant effect on life expectancy!
+
+*Analysis can be done using `lm` functon - seeing similar results*
+
+```{r message=FALSE, warning=FALSE}
+anova(lm(lifeExp ~ region, data = gapminder))
+```
+
+### Visualize Correlation Regression
+
+*To see effect of income on lifeExp*
+
+```{r message=FALSE, warning=FALSE}
+lm_fit1 <- lm(lifeExp ~ income, data = gapminder)
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+summary(lm_fit1)
+```
+
+lifeExp is the dependent variable, income is the independent variable from gapminder dataset.
+R-squared is 0.26 hence the model performs poorly.
+
+*Plot the linear model*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(income, lifeExp)) + 
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  ggtitle("linear model for lifeExp by income")
+```
+
+Seems like a bad fit, also since all data seem to be concentrated near y-axis. 
+
+*Plot the model with log values to see the difference*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(log(income), lifeExp)) + 
+  geom_jitter() +
+  geom_smooth(method = "lm") +
+  theme(plot.background = element_rect(fill = "coral", color = "blueviolet", size = 2), 
+                      axis.title.y = element_text(color = "red", hjust = 0.5, face = "italic"),
+                    axis.title.x = element_text(color = "red", hjust = 0.5, face = "italic"),
+                    axis.text = element_text(color = "black"),
+                    legend.position = "none",
+  panel.background = element_rect(fill = "transparent",colour = NA), # or theme_blank()
+    panel.grid.minor = element_blank(), 
+    panel.grid.major =element_blank()) +
+  ggtitle("linear model for lifeExp and income")
+```
+
+This looks much better to visualize.
+
+*To see effect of two continuous variables income and year on lifeExp, we can use multiple regression.*
+
+```{r message=FALSE, warning=FALSE}
+lm_fit2 <- lm(lifeExp ~ income + year, data = gapminder)
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+summary(lm_fit2)
+```
+
+lifeExp is the dependent variable, income and year as the 2 independent variables from gapminder dataset.
+R-squared is 0.70, much better than the previous model. Both income and year are significant predictors of life expectancy. 
+Intercept is what lifeExp value would be when both income and year were 0. 
+Coefficient is how much lifeExp increase for 1 unit increase in income and 1 unit increase year.
+Here, life expectancy increases by 3.122e-04 for every 1 unit increase in income. Life expectancy increases by 2.118e-01 for each unit increase in year. 
+
+*Income life expectancy over the years*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x = log(income), y = lifeExp, col = year)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + 
+  geom_smooth(method = "lm", se = FALSE, lty = 2, aes(group = 1)) +
+  ggtitle("linear model for lifeExp, income over the years")
+```
+
+Life expectancy by income and year shows positive linear relationship
+
+*Let's also check the income life expectancy by regions*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gapminder, aes(x = log(income), y = lifeExp, col = region)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = FALSE) + 
+  geom_smooth(method = "lm", se = FALSE, lty = 2, aes(group = 1)) +
+  facet_wrap(.~region) +
+  ggtitle("linear model for lifeExp, income by regions")
+```
+
+This plot also shows linear relationship by region. 
+
+*Therefore let's check out the 3 interaction terms if the model improves.*
+
+```{r message=FALSE, warning=FALSE}
+lm_fit3 <- lm(lifeExp ~ income + year + region + income:year + income:region + year:region + income:year:region, data = gapminder)
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+summary(lm_fit3)
+```
+
+lifeExp is the dependent variable, income, year and region as the 3 independent variables from gapminder dataset.
+R2 is 0.83. Interactions between the 3 variables explain a lot of variance in the data. 
+83% of the variability in lifeExp is explained by year, income and region.
+
+### Model Diagnostics
+
+Assumptions of linear regression, are stated as,
+
+* **L**inearity - the response can be written as a linear combination of the predictors.
+* **I**ndependence - errors are independent
+* **N**ormality - distribution of errors should follow a normal distribution
+* **E**qual Variance - the error variance is the same at any set of predictor values
+
+Checking Assumptions:
+
+1. Fitted versus Residuals Plot - useful for checking both the linearity and constant variance assumptions.
+Data generated from Model using 3 interaction terms above should not show any signs of violating assumptions, so we'll use this to see what a good fitted versus residuals plot should look like.
+
+*Fit the model and add the fitted line to a scatterplot.*
+
+```{r message=FALSE, warning=FALSE}
+plot(fitted(lm_fit3), resid(lm_fit3), col = "grey", pch = 20,
+     xlab = "Fitted", ylab = "Residuals", main = "Data from 3 Interaction term Model")
+abline(h = 0, col = "darkorange", lwd = 2)
+```
+
+At every fitted value, the spread of the residuals should be roughly the same. If this is the case, the constant variance assumption is valid. We don't see the spread even though the model performs well. 
+
+*Does Mean of lifeExp equals to mean of fitted values?* `r mean(gapminder$lifeExp) == mean(fitted.values(lm_fit3))`
+
+```{r message=FALSE, warning=FALSE, eval=FALSE}
+mean(gapminder$lifeExp) == mean(fitted.values(lm_fit3))
+```
+
+Mean of the residuals is `r mean(residuals(lm_fit3))`. If zero (close to zero), the linearity assumption is valid as in this case.
+
+```{r message=FALSE, warning=FALSE, eval=FALSE}
+mean(residuals(lm_fit3))
+```
+
+The least squares fitting procedure guarantees that the mean of the residuals is closer to zero. At the same time, the mean of the fitted values must equal the mean of the response variable. Our results prove the same.
+
+*Breusch-Pagan Test - Testing for homoscedasticity (constant variance)*
+
+*Let's test on 3 interaction term model*
+
+```{r message=FALSE, warning=FALSE}
+bptest(lm_fit3)
+```
+
+For lm_fit3 we see a small p-value, so we reject the null of homoscedasticity. The constant variance assumption is violated. This matches our findings with a fitted versus residuals plot.
+
+*Testing for normality assumption - on all 3 models*
+
+```{r message=FALSE, warning=FALSE}
+par(mfrow = c(1, 3))
+hist(resid(lm_fit1),
+     xlab   = "Residuals",
+     main   = "lifeExp-income",
+     col    = "darkorange",
+     border = "dodgerblue",
+     breaks = 20)
+hist(resid(lm_fit2),
+     xlab   = "Residuals",
+     main   = "life-income/year",
+     col    = "darkorange",
+     border = "dodgerblue",
+     breaks = 20)
+hist(resid(lm_fit3),
+     xlab   = "Residuals",
+     main   = "life-income/year/region",
+     col    = "darkorange",
+     border = "dodgerblue",
+     breaks = 20)
+```
+
+Above are histograms for each of the three regression we have been considering. The third, for lm_fit3, appears somewhat normal than other 2 models. However all 3 are not as clear. For this reason we will usually use more powerful tools such as Q-Q plots and the Shapiro-Wilk test for assessing the normality of errors.
+
+*Testing for normality assumption - Q-Q plots*
+
+```{r message=FALSE, warning=FALSE}
+par(mfrow = c(1, 3))
+qqnorm(resid(lm_fit1), main = "Q-Q, lifeExp-income", col = "darkgrey")
+qqline(resid(lm_fit1), col = "dodgerblue", lwd = 2)
+qqnorm(resid(lm_fit2), main = "Q-Q, lifeExp-income/year", col = "darkgrey")
+qqline(resid(lm_fit2), col = "dodgerblue", lwd = 2)
+qqnorm(resid(lm_fit3), main = "Q-Q, lifeExp-income/year/region", col = "darkgrey")
+qqline(resid(lm_fit3), col = "dodgerblue", lwd = 2)
+```
+
+As seen above lm_fit3 seems to have points close to the line compared to the other 2 models.
+
+*Shapiro-Wilk Test - Another test for residuals distribution*
+
+However, the sample size must be between 3 and 5000 for this test. In our case, number of observations is much greater. 
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+shapiro.test(resid(lm_fit1))
+shapiro.test(resid(lm_fit2))
+shapiro.test(resid(lm_fit3))
+```
+
+*Checking for "unusual observations" - leverage, influential, outliers*
+
+Points of large leverage and large residual
+
+*Model 1*
+
+```{r message=FALSE, warning=FALSE}
+sum(hatvalues(lm_fit1) > 2 * mean(hatvalues(lm_fit1)))
+sum(abs(rstandard(lm_fit1)) > 2)
+```
+
+793 points of large leverage in the first model. 426 points with large residual.
+
+*Model 2*
+
+```{r message=FALSE, warning=FALSE}
+sum(hatvalues(lm_fit2) > 2 * mean(hatvalues(lm_fit2)))
+sum(abs(rstandard(lm_fit2)) > 2)
+```
+
+1367 points of large leverage in the second model. 403 points with large residual.
+
+*Model 3*
+
+```{r message=FALSE, warning=FALSE}
+sum(hatvalues(lm_fit3) > 2 * mean(hatvalues(lm_fit3)))
+sum(abs(rstandard(lm_fit3)) > 2)
+```
+
+1442 points of large leverage in the third model.  729 points with large residual.
+
+*Check `cooks.distance` to see if these points are influential. Let's take `lm_fit3` to verify this.*
+
+```{r message=FALSE, warning=FALSE}
+cd_lm_fit3 = cooks.distance(lm_fit3)
+sum(cd_lm_fit3 > 4 / length(cd_lm_fit3))
+```
+
+There seems 879 influential points in model 3 (our 3 interaction model. 
+
+```{r message=FALSE, warning=FALSE}
+large_cd_fit3 = cd_lm_fit3 > 4 / length(cd_lm_fit3)
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+cd_lm_fit3[large_cd_fit3]
+```
+
+This fetches all rows in the model 3 that are influential.
+
+*Check the coefficients of model 3*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+coef(lm_fit3)
+```
+
+*Check the coefficients of model 3 after fixing/removing influential points*
+
+```{r message=FALSE, warning=FALSE}
+lm_fit3_fix <- lm(lifeExp ~ income + year + region + income:year + income:region + year:region + income:year:region, data = gapminder, subset = cd_lm_fit3 <= 4 / length(cd_lm_fit3))
+```
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+coef(lm_fit3_fix)
+```
+
+Comparing coefficients of model 3 `lm_fit3` and model 3 `lm_fit3_fix` after removing influential points.  There seems significant impact on the slope after removing influential points. 
+
+*Checking summary of `lm_fit3_fix` - model after removing influential points.*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+summary(lm_fit3_fix)
+summary(lm_fit3)
+```
+
+R-squared for model after removing influential points is 0.86 compared to the original model which had R-squared value of 0.83. 
+
+*Plot the diagnostics for `lm_fit3` - Model 3*
+
+```{r message=FALSE, warning=FALSE}
+par(mfrow = c(2, 2))
+plot(lm_fit3, main="original model")
+```
+
+*Plot the diagnostics for `lm_fit3_fix`- Model 3 after removing influential points*
+
+```{r message=FALSE, warning=FALSE}
+par(mfrow = c(2, 2))
+plot(lm_fit3_fix, main="After removing influential")
+```
+
+Model 3  after removing the influential points seems to be slightly better. 
+
+### Tidying the linear model
+
+```{r message=FALSE, warning=FALSE}
+gapminder_tidy <- augment(lm_fit3)
+#glimpse(gapminder_tidy)
+```
+
+`augment()` returns a dataframe that contains the data on which model was fit, along with regression model values.
+
+Leverage - The leverage of an observation in a regression model is defined entirely in terms of the distance of that observation from the mean of the explanatory variable. observations close to the mean of the explanatory variable have low leverage, while observations far from the mean of the explanatory variable have high leverage. Points of high leverage may or may not be influential.
+
+*Rank points of high leverage*
+
+```{r message=FALSE, warning=FALSE}
+lm_fit3 %>%
+  augment() %>%
+  arrange(desc(.hat)) %>%
+  head()
+```
+
+South Asia regions show high leverage.
+
+Influential - Observations of high leverage may or may not be influential. The influence of an observation depends not only on its leverage, but also on the magnitude of its residual Influential points are likely to have high leverage and deviate from the general relationship between the two variables. We measure influence using Cook's distance, which incorporates both the leverage and residual of each observation.
+
+*Rank influential points*
+
+```{r message=FALSE, warning=FALSE}
+lm_fit3 %>%
+augment() %>%
+arrange(desc(.cooksd)) %>%
+head()
+```
+
+### Nesting Multiple Linear Models
+
+Right now gapminder has 1 row per country-lifeExp pair. We will nest all columns but country so we can model each country individually. 
+
+#### Fitting multiple models - population by country
+
+*Nest all columns besides country*
+
+```{r message=FALSE, warning=FALSE}
+country_coefficients <- gapminder %>%
+  nest(-country) %>%
+  mutate(models = map(data, ~ lm(pop ~ year, data = .)),
+         tidied = map(models, tidy)) %>%
+  unnest(tidied, .drop = TRUE)
+country_coefficients
+```  
+
+*Filter for only the slope terms and highly significant values*
+
+```{r message=FALSE, warning=FALSE}
+slope_terms <- country_coefficients %>%
+filter(term == "year")
+# Add p.adjusted column, then filter
+filtered_countries <- slope_terms %>%
+mutate(p.adjusted = p.adjust(p.value)) %>%
+filter(p.adjusted < 0.05)
+```
+
+*Sort for the countries population estimates in increasing order*
+
+```{r message=FALSE, warning=FALSE}
+filtered_countries %>%
+arrange(estimate)
+```
+
+Dominica seems to the least populated. 
+
+*Sort for the countries population estimates in decreasing order*
+
+```{r message=FALSE, warning=FALSE}
+filtered_countries %>%
+arrange(desc(estimate))
+```
+
+China and India top the list, as expected.
+
+## Cluster Analysis
+
+### Prepare data for Cluster Analysis
+
+1. Dimensionality Reduction with PCA (Principal Component Analysis)
+Identify the dimensions that explains 75% of the variation in data. This can be done by creating PCA model and observe the diagnostic results.
+
+*Standard deviation is used to scale the data and column means used to center the data.*
+
+```{r message=FALSE, warning=FALSE}
+# Perform scaled PCA: pr.out
+pr.out <- prcomp(gapminder[,2:5], scale=TRUE, center=TRUE)
+```
+
+*Summary stats of PCA model*
+
+```{r message=FALSE, warning=FALSE}
+summary(pr.out)
+```
+
+Minimum number of principal components required to explain atleast 75% of cumulative variance in the dataset is 2. PC1 & PC2 cumulative proportion is 0.7759.
+
+*Variability of each principal component: pr.var*
+
+```{r message=FALSE, warning=FALSE}
+pr.var <- pr.out$sdev^2
+```
+
+*Variance explained by each principal component: pve*
+
+```{r message=FALSE, warning=FALSE}
+pve <- pr.var / sum(pr.var)
+```
+
+*Plot variance explained for each principal component*
+
+```{r message=FALSE, warning=FALSE}
+plot(pve, main="variance explained by PC", xlab = "Principal Component",
+     ylab = "Proportion of Variance Explained",
+     ylim = c(0, 1), type = "b")
+```
+
+*Plot cumulative proportion of variance explained*
+
+```{r message=FALSE, warning=FALSE}
+plot(cumsum(pve), main="cumulative proportion of variance", xlab = "Principal Component",
+     ylab = "Cumulative Proportion of Variance Explained",
+     ylim = c(0, 1), type = "b")
+```
+
+Above plot shows 75% of cumulative variance is explained by 2 principal components.
+
+*Creating a Biplot for the PCA model*
+
+```{r message=FALSE, warning=FALSE}
+biplot(pr.out)
+```
+
+year and lifeExp are in the same direction, which shows the 2 variables are highly correlated. Income is moderate correlation with year & life Exp. Let's use lifeExp and Income to create a 2 dimensional data frame.
+
+2. Now create a 2-dimensional data frame from gapminder from few countries - US, China, India, Japan, France, UK
+
+```{r message=FALSE, warning=FALSE}
+sel_country <- c("United States", "China", "India", "Japan", "France", "United Kingdom")
+gapminder_sel <- gapminder %>%
+  filter(country %in% sel_country) %>%
+  select("lifeExp","income", "year", "country") 
+```
+
+*glimpse the structure of the data frame `gapminder_sel`*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+str(gapminder_sel)
+glimpse(gapminder_sel)
+```
+
+3. Scale the first 2 columns of the dataset before performing cluster analysis - lifeExp & income
+
+```{r message=FALSE, warning=FALSE}
+gapminder_sel_scaled <- scale(gapminder_sel[,1:2])
+```
+
+### K-means clustering
+
+This section describes how to perform data analysis using k-means clustering method. 
+
+Various methods can be used to determine the number of clusters. We will be discussing Elbow and Silhouette methods here.
+
+*Finding k (number of clusters) using Elbow method*
+
+Use map_dbl to run many models with varying value of k (centers)
+
+```{r message=FALSE, warning=FALSE}
+tot_withinss <- map_dbl(1:10,  function(k){
+  model <- kmeans(x = gapminder_sel_scaled, centers = k, nstart = 20)
+  model$tot.withinss
+})
+```
+
+*Generate a data frame containing both k and tot_withinss*
+
+```{r message=FALSE, warning=FALSE}
+elbow_df <- data.frame(
+  k = 1:10,
+  tot_withinss = tot_withinss
+)
+```
+
+*Plot the elbow plot*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(elbow_df, aes(x = k, y = tot_withinss)) +
+  geom_line() +
+  scale_x_continuous(breaks = 1:10) +
+  ggtitle("elbow plot")
+```  
+
+Number of clusters determined using Elbow method is 2 (where we notice sharp drop in tot_withinssarp)
+
+*Build a kmeans model*
+
+```{r message=FALSE, warning=FALSE}
+model_km2 <- kmeans(gapminder_sel_scaled, centers=2, nstart = 20)
+```
+
+*Extract the cluster assignment vector from the kmeans model*
+
+```{r message=FALSE, warning=FALSE}
+clust_km2 <- model_km2$cluster
+```
+
+*Create a new data frame appending the cluster assignment*
+
+```{r message=FALSE, warning=FALSE}
+gap_km2 <- mutate(gapminder_sel, cluster=clust_km2)
+```
+
+*Visualize the cluster*
+
+```{r message=FALSE, warning=FALSE}
+fviz_cluster(model_km2, data = gapminder_sel_scaled)
+```
+
+This visual shoows which income & life expectancy data points belong to which cluster.
+
+*Visualizing the lifeExp-income cluster distribution by country*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gap_km2, aes(x = income, y = lifeExp, color = factor(cluster))) +
+  geom_line(size=1) +
+  facet_wrap(country ~ .) +
+  ggtitle("lifeExp income cluster by country")
+```
+
+Shows the range pf income-lifeExp distribution for each vountry. Notice no datapoint in cluster 1 for India.
+
+*Count the cluster assignments*
+
+```{r echo = FALSE, message=FALSE, warning=FALSE}
+count(gap_km2, cluster)
+```
+
+*Calculate the mean for each cluster, country*
+
+```{r message=FALSE, warning=FALSE}
+gap_km2 %>% 
+  group_by(cluster, country) %>% 
+  summarise(mean(lifeExp), mean(income), n())
+```  
+
+This shows the average values for lifeExp-income for each country in that cluster.
+
+*Silhouette Analysis - finding k (number of clusters) using Silhouette width method*
+
+*Determine number of clusters*
+Use map_dbl to run many models with varying value of k
+
+```{r message=FALSE, warning=FALSE}
+sil_width <- map_dbl(2:10,  function(k){
+  model <- pam(x = gapminder_sel_scaled, k = k)
+  model$silinfo$avg.width
+})
+```
+
+*Generate a data frame containing both k and sil_width*
+
+```{r message=FALSE, warning=FALSE}
+sil_df <- data.frame(
+  k = 2:10,
+  sil_width = sil_width
+)
+```
+
+*Plot the relationship between k and sil_width*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(sil_df, aes(x = k, y = sil_width)) +
+  geom_line() +
+  scale_x_continuous(breaks = 2:10) +
+  ggtitle("k and sl_width")
+```  
+
+k=3 has the highest average sil_width
+
+*Generate a k-means model using the pam() function with a k = 3*
+
+```{r message=FALSE, warning=FALSE}
+pam_k3 <- pam(gapminder_sel_scaled, k = 3)
+```
+
+*Plot the silhouette visual for the pam_k2 model*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+plot(silhouette(pam_k3))
+```
+
+Note that we have suppressed this plot. 
+
+*Extract the cluster assignment vector from the kmeans model*
+
+```{r message=FALSE, warning=FALSE}
+pam_km3 <- pam_k3$cluster
+```
+
+*Create a new data frame appending the cluster assignment*
+
+```{r message=FALSE, warning=FALSE}
+gap_pam_km3 <- mutate(gapminder_sel, cluster=pam_km3)
+```
+
+*Plot the lifeExp and income and color them using their cluster*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gap_pam_km3, aes(x = income, y = lifeExp, color = factor(cluster))) +
+  geom_line(size=1) +
+  facet_wrap(country ~ .) +
+  ggtitle("lifeExp income cluster by country")
+```
+
+This visual also shows no data for india in cluster 3.
+
+*Count the cluster assignments*
+
+```{r message=FALSE, warning=FALSE}
+count(gap_pam_km3, cluster)
+```
+
+*Calculate the mean for each category*
+
+```{r message=FALSE, warning=FALSE}
+gap_pam_km3 %>% 
+  group_by(cluster, country) %>% 
+  summarise(mean(lifeExp), mean(income), n())
+```  
+
+#### Compare K-means - Elbow and Silhouette cluster Methods
+
+Let's compare the output from K-means elbow and silhouette clustering methods. 
+
+*K-means - Elbow Vs Silhouette*
+
+```{r message=FALSE, warning=FALSE}
+# Compare to k-means elbow and silhouette
+table(gap_km2$cluster, gap_pam_km3$cluster)
+```
+
+Both elbow and silhouette have clustered similar way and not seeing much variation, except for silhouette method was run for 3 clusters. 
+
+### Hierarchical clustering
+
+This section describes how to perform data analysis using hierarchical clustering method. 
+
+*Calculate euclidean distance*
+
+```{r message=FALSE, warning=FALSE}
+dist_gap <- dist(gapminder_sel_scaled)
+```
+
+*Perform the hierarchical clustering using the complete, single, average linkage methods*
+
+```{r message=FALSE, warning=FALSE}
+hc_gap_complete <- hclust(dist_gap, method="complete")
+hc_gap_single <- hclust(dist_gap, method="single")
+hc_gap_average <- hclust(dist_gap, method="average")
+```
+
+*Plot the 3 dendograms side by side*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+par(mfrow = c(1,3))
+plot(hc_gap_complete, main = 'Complete Linkage')
+plot(hc_gap_single, main = 'Single Linkage')
+plot(hc_gap_average, main = 'Average Linkage')
+```
+
+*Create a dendrogram object from the hclust variable*
+
+```{r message=FALSE, warning=FALSE}
+dend_gap_complete <- as.dendrogram(hc_gap_complete)
+```
+
+*Plot the dendrogram*
+
+```{r eval=FALSE, message=FALSE, warning=FALSE}
+plot(dend_gap_complete)
+```
+
+Note that we have suppressed this plot.
+
+*Color branches by cluster formed from the cut at a height of 2 & plot*
+
+```{r message=FALSE, warning=FALSE}
+dend_gap_height <- color_branches(dend_gap_complete, h = 2)
+```
+
+*Plot the dendrogram with clusters colored below height 2*
+
+```{r message=FALSE, warning=FALSE}
+plot(dend_gap_height, main="dendogram plot height=2")
+```
+
+This has created 5 clusters based on height=2
+
+*Cutree for height = 2*
+
+```{r message=FALSE, warning=FALSE}
+clusters_gap_height <- cutree(hc_gap_complete, h=2)
+```
+
+*Create a new data frame storing these results*
+
+```{r message=FALSE, warning=FALSE}
+gap_height_complete <- mutate(gapminder_sel, cluster = clusters_gap_height)
+```
+
+*Count the cluster assignments*
+
+```{r message=FALSE, warning=FALSE}
+count(gap_height_complete, cluster)
+```
+
+*Calculate the mean for each category*
+
+```{r message=FALSE, warning=FALSE}
+gap_height_complete %>% 
+  group_by(cluster, country) %>% 
+  summarise(mean(lifeExp),mean(income), n())
+```  
+
+*Plot the positions of the lifeExp-Income and color them using their cluster*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gap_height_complete, aes(x = income, y = lifeExp, color = factor(cluster))) +
+  geom_line(size=1) +
+  facet_wrap(country ~ .) +
+  ggtitle("lifeExp-Income cluster by country")
+```
+
+As  expected, we can see 5 clusters were created for height=2
+
+*Cutree based on clusters instead of height*
+
+```{r message=FALSE, warning=FALSE}
+clusters_gap6_complete <- cutree(hc_gap_complete, k=6)
+```
+
+*Create a new data frame storing these results*
+
+```{r message=FALSE, warning=FALSE}
+gap_complete <- mutate(gapminder_sel, cluster = clusters_gap6_complete)
+```
+
+*Count the cluster assignments*
+
+```{r message=FALSE, warning=FALSE}
+count(gap_complete, cluster)
+```
+
+*Calculate the mean for each category*
+
+```{r message=FALSE, warning=FALSE}
+gap_complete %>% 
+  group_by(cluster, country) %>% 
+  summarise(mean(lifeExp), mean(income),n())
+```  
+
+*Plot the positions of the lifeExp-Income and color them using their cluster*
+
+```{r message=FALSE, warning=FALSE}
+ggplot(gap_complete, aes(x = income, y = lifeExp, color = factor(cluster))) +
+  geom_line(size=1) +
+  facet_wrap(country ~ .) +
+  ggtitle("lifeExp income cluster by country")
+```
+
+Visual shows distribution by cluster assignments
+
+#### Compare Hierarchical - Height Vs Cluster Method 
+
+Let's compare the output from hierachical height and cluster clustering methods. 
+
+*Compare to Hierarchical Cutree based on Height and # of Clusters*
+
+```{r message=FALSE, warning=FALSE}
+table(gap_height_complete$cluster, gap_complete$cluster)
+```
+
+Above table shows both height and # clusters have clustered similar way and not seeing much variation. Rows contain the cutree based on height and columns shows the cutree based on number of clusters.
+
+
+# Conclusion
+Overall this analysis shows Life Expectancy have improved dramatically in every country. They remain clearly associated with the income. Life Expectancy is directly correlated with income but shows best-fit with year and region. Population shows steady increase in all regions over the years. 
+
+From technical standpoint, we explored the following in R:
+
+1. Installing packages & Loading libraries
+2. Reading CSV dataset in R
+3. Exploring raw data commands
+4. Visualizing raw data - use of histogram, boxplots, density, correlation plots
+5. Using baseR plot, ggplot2, interactive plots using Shiny, custom backgrounds and axis names etc
+6. Linear Regression Models - simple, interactions
+7. Clustering - K-means, hierarchical
+8. Dimensionality Reduction using PCA
+9. Use of R Markdown - code chunks, in-line, html, themes, toc, fonts, titles etc
+10. Use of github for publishing code & html output
+
+# References
+
+References for performing this exercise includes:
+
+* [DataCamp](https://www.datacamp.com/home)
+* [r4ds](https://r4ds.had.co.nz)
+* [bookdown](https://bookdown.org/rdpeng/exdata)
+* [cran.r-project](https://cran.r-project.org)
